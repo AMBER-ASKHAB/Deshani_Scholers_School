@@ -1,0 +1,210 @@
+/* /* ---------- Base ---------- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", Arial, sans-serif;
+}
+
+html, body {
+    height: 100%;
+    background: #f8f8f8;
+    color: #333;
+}
+
+/* ---------- Topbar ---------- */
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff;
+    border-bottom: 1px solid #eee;
+    padding: 10px 24px;
+    height: 70px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+    .topbar .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .topbar .logo img {
+            height: 42px;
+            width: 42px;
+            border-radius: 50%;
+        }
+
+        .topbar .logo span {
+            font-size: 18px;
+            font-weight: 600;
+            color: #8b0000;
+        }
+
+/* ---------- Layout ---------- */
+.main {
+    display: flex;
+    height: calc(100% - 70px);
+}
+
+/* ---------- Sidebar ---------- */
+.sidebar {
+    width: 230px;
+    background: #8b0000;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    border-top-right-radius: 12px;
+}
+
+    .sidebar h2 {
+        font-size: 18px;
+        font-weight: 600;
+        text-align: center;
+        padding: 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .sidebar nav ul {
+        list-style: none;
+    }
+
+    .sidebar nav li {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .sidebar nav a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #fff;
+        text-decoration: none;
+        padding: 12px 18px;
+        font-size: 15px;
+        transition: background 0.2s ease;
+    }
+
+        .sidebar nav a:hover,
+        .sidebar nav li.active > a {
+            background: #6d0000;
+        }
+
+/* ---------- Workspace ---------- */
+.workspace {
+    flex: 1;
+    padding: 24px;
+    background: linear-gradient(to bottom, #fff4f4, #fff);
+    overflow: auto;
+}
+
+/* ---------- Section ---------- */
+section {
+    background-color: #fff;
+    padding: 20px 25px;
+    border-radius: 16px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+    section h2 {
+        font-size: 20px;
+        color: #8b0000;
+        margin-bottom: 16px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 6px;
+    }
+
+/* ---------- Form & Table Layout ---------- */
+.field label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    display: block;
+    margin-bottom: 5px;
+}
+
+input[type="text"],
+select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    background-color: #fff;
+    transition: border-color 0.2s;
+}
+
+    input:focus,
+    select:focus {
+        border-color: #8b0000;
+        outline: none;
+    }
+
+/* ---------- Buttons ---------- */
+button,
+.btn {
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+    button#submitBtn {
+        background: #8b0000;
+        color: #fff;
+    }
+
+        button#submitBtn:hover {
+            background: #6d0000;
+        }
+
+    button#cancelEdit {
+        background: #f2f2f2;
+        color: #333;
+    }
+
+        button#cancelEdit:hover {
+            background: #e0e0e0;
+        }
+
+/* ---------- Table ---------- */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 14px;
+    border-radius: 10px;
+    overflow: hidden;
+    font-size: 14px;
+}
+
+th, td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+th {
+    background: #f8f8f8;
+    font-weight: 600;
+}
+
+tr:hover td {
+    background: #fff7f7;
+}
+
+/* ---------- Utility ---------- */
+.flex {
+    display: flex;
+    gap: 20px;
+}
+
+.bold {
+    font-weight: 600;
+}
+
+.center {
+    text-align: center;
+}

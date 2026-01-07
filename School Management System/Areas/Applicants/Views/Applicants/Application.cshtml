@@ -1,0 +1,593 @@
+﻿@using School_Management_System.Areas.Applicants.Models
+@using School_Management_System.Areas.Auth.Models
+@model ApplicantViewModel
+@{
+    Layout = "~/Areas/Applicants/Views/Shared/_ApplicantLayout.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Applicant Dashboard – Deshani Scholars School</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="~/css/Applicant.css">
+</head>
+
+<body>
+
+    <!-- Topbar -->
+    <div class="topbar">
+        <div class="logo">
+            <img src="~/lib/logo.png" alt="Logo">
+            <span>Deshani Scholars School</span>
+        </div>
+    </div>
+
+    <!-- Right Profile Sidebar -->
+    <!-- Layout -->
+    <div class="main">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <h2>Applicant Portal</h2>
+            <nav>
+                <ul>
+                    <li class="active">
+                        <a href="#" onclick="showSection('dashboardSection')">
+                            <i class="fas fa-home"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="expandable" a>
+                        <a href="#" class="main-link" onclick="toggleExpand(this)">
+                            <i class="fas fa-list-check"></i> Application
+                            <i class="fas fa-chevron-down arrow"></i>
+                        </a>
+                        <ul class="expandable-content">
+                            @if (ViewBag.CanApply)
+                            {
+                                <li><a href="#" onclick="openCreateApplication()">Create Application</a></li>
+                            }
+                            else
+                            {
+                                <li><a href="javascript:void(0)" class="text-muted disabled-link">Application Submitted</a></li>
+                            }
+                            <li><a href="#" onclick="showSection('viewApplicationSection')">View Application</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#" onclick="showSection('paymentsSection')">
+                            <i class="fas fa-file-invoice-dollar"></i> Fee
+                            Challan
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="showSection('helpSection')"><i class="fas fa-circle-question"></i> Help & Support</a>
+                    </li>
+                    <li class="expandable">
+                        <a href="#" class="main-link" onclick="toggleExpand(this)">
+                            <i class="fa-solid fa-user"></i> Account<i class="fas fa-chevron-down arrow"></i>
+                        </a>
+                        <ul class="expandable-content">
+                            @if (ViewBag.CanApply)
+                            {
+                                <li><a href="#" onclick="showSection('applicationSection')">Edit Profile</a></li>
+                            }
+                            else
+                            {
+                                <li><a href="javascript:void(0)" class="text-muted disabled-link">Application Submitted</a></li>
+                            }
+                            <li><a href="#" onclick="showSection('changePasswordSection')">Change Password</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <form asp-area="Auth" asp-controller="Auth" asp-action="Logout" method="post" style="  background: none;  color: white;">
+                        <a href="#">
+                            <i class="fa-solid fa-right-to-bracket"></i>
+                             <button type="submit" class="btn btn-danger" style="background:none; color:white">Logout</button>
+                        </a>
+                        </form>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Workspace -->
+        <main class="workspace">
+
+            <!-- DASHBOARD -->
+            <section id="dashboardSection" class="page-section active">
+                <div class="card notification-bar">
+                    <h3>Latest Notifications</h3>
+                    <marquee scrollamount="4">
+                        🎉 Welcome to all newly admitted students | 📅 Fee submission deadline: 20th August 2025
+                    </marquee>
+                </div>
+
+                <div class="procedure-section">
+                    <h2>Admission Procedure</h2>
+                    <p style="color: #8b0000;margin-bottom: 16px;">
+                        <b>
+                            To apply, create an application, upload documents, fill in all required info, and submit the challan.
+                            You can then view your admission status, and once admitted, you will be notified via email or the portal.
+                        </b>
+                    </p>
+                    <div class="procedure-steps">
+
+                        <!-- Step 1 -->
+                        <div class="step-card">
+                            <h3>1. Application</h3>
+                            <p>Fill out and complete your application form here.</p>
+                            @if (ViewBag.CanApply)
+                            {
+                                <button class="action-btn" onclick="openCreateApplication()">Create Application</button>
+                            }
+                            else
+                            {
+                                <button class="action-btn" disabled>Application Submitted</button>
+                            }
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="step-card">
+                            <h3>2. Challan</h3>
+                            <p>Download the challan provided by the admin and pay the fee.</p>
+                            <button class="action-btn" onclick="showSection('paymentsSection')">View Challan</button>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="step-card">
+                            <h3>3. Application Status</h3>
+                            <p>View your Application Status</p>
+                            <button class="action-btn" onclick="showSection('viewApplicationSection')">View Application </button>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>About Deshani Scholars School</h2>
+                    <p>
+                        Deshani Scholars School is committed to providing high-quality education in a nurturing environment,
+                        encouraging students to reach their full potential academically and personally.
+                    </p>
+                    <div class="image-section">
+                        <img clas="img1" src="~/css/assets/deshani.jpg" onclick="openLightbox(this.src)"></img>
+                        <img clas="img1" src="~/css/assets/deshani2.jpg" onclick="openLightbox(this.src)"></img>
+                        <img clas="img1" src="~/css/assets/deshani3.jpg" onclick="openLightbox(this.src)"></img>
+                        <img clas="img1" src="~/css/assets/deshani4.jpg" onclick="openLightbox(this.src)"></img>
+                        <img clas="img1" src="~/css/assets/deshani5.jpg" onclick="openLightbox(this.src)"></img>
+                        <img clas="img1" src="~/css/assets/deshani6.jpg" onclick="openLightbox(this.src)"></img>
+                        <img clas="img1" src="~/css/assets/deshani7.jpg" onclick="openLightbox(this.src)"></img>
+                    </div>
+                </div>
+            </section>
+            <!-- APPLICATION (Wizard) -->
+            <section id="applicationSection" class="page-section">
+
+                <div class="card">
+                    <h2>Admission Application</h2>
+                    <!-- step pills -->
+                    <div id="appPills" class="progress-steps" style="margin-bottom:10px;border: none;"></div>
+                    <div class="progress-bar-wrap">
+                        <div id="appProgressBar" class="progress-bar"></div>
+                    </div>
+
+                </div>
+
+
+                <!-- STEP 1: Applying Class -->
+                <form id="step1" class="card step-pane" asp-area="Applicants" asp-controller="Applicants" asp-action="SaveStep1" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <h3>Step 1: Applying Class</h3>
+
+                    <label style="font-weight:600;margin-bottom:10px;display:block">Applying For Class</label>
+
+                    <!-- Class Selection Cards -->
+                    <div class="categories">
+                        @foreach (var category in Model.ClassCategoryList)
+                        {
+                            <div class="category-card" data-group="@category.Category.ToLower()">
+                                <h4>@category.DisplayCategory</h4>
+                                <br />
+
+                                <div class="class-list" style="display:flex;">
+                                    @foreach (var cls in category.Classes)
+                                    {
+                                        <div class="class-chip"
+                                             data-id="@cls.Id"
+                                             data-category="@category.Category"
+                                             data-description="@cls.Description">
+                                            @cls.Description
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Hidden field to capture selection (replaces <select>) -->
+                    <input asp-for="AppliedClass.AppliedForClassId" type="hidden" id="apply_class" />
+
+                    <!-- Quick Links Section -->
+                    <div id="quickLinks" style="margin-top:20px; padding:15px; border:1px solid #eee;
+            border-radius:8px; background:#fafafa; display:none;">
+                        <h4 style="margin-bottom:10px;">📎 Quick Links / Downloads</h4>
+                        <ul id="quickLinksList" style="list-style:none; padding:0; line-height:2;"></ul>
+                    </div>
+
+                    <div class="btn-row" style="margin-bottom:20px;">
+                        <button type="button" class="btn primary" onclick="saveStep(1)">Save & Continue</button>
+                    </div>
+                </form>
+
+
+
+                <!-- STEP 2: Personal -->
+                <form id="step2" class="card step-pane hidden" asp-area="Applicants" asp-controller="Applicants" asp-action="SaveStep2" method="post" enctype="multipart/form-data">
+                    <h3>Step 2: Personal Information</h3>
+                    <div class="avatar-upload" style="margin:10px 0 18px">
+                        <img id="liveAvatar" src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="Preview">
+                        <label class="pick">
+                            <input asp-for="CreateApplicant.ProfilePic" id="avatarInput" type="file" accept="image/*">
+                            <i class="fas fa-upload"></i> Upload Profile Photo
+                        </label>
+                        <span class="small">PNG/JPG up to ~2MB</span>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="field col-6" style="margin-top:40px">
+                            <label>Full Name</label>
+                            <input asp-for="CreateApplicant.FullName" id="p_fullname" type="text" placeholder="Enter your name">
+                        </div>
+                        <div class="field col-3" style="width: 150px;margin-top:40px">
+                            <label>Gender</label>
+                            <select asp-for="CreateApplicant.Gender" id="p_gender">
+                                <option value="">Select</option>
+                                <option>Male</option>
+                                <option>Female</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div class="field col-3" style="width: 180px;margin-top:40px">
+                            <label>Date of Birth</label>
+                            <input asp-for="CreateApplicant.DateOfBirth" id="p_dob" type="date">
+                        </div>
+                        <div class="upload-card" style="width: 200px;margin-top:40px;margin-bottom: -33px;">
+                            <h4>Upload B-Form</h4>
+                            <div style="display:flex;">
+                                <input asp-for="CreateApplicant.BFormFile" STYLE="MARGIN-TOP: 13PX;" type="file" id="fileInput1" class="file-input" accept="image/*,.pdf">
+                                <div id="fileList" style="margin-bottom: -40px;"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="field col-6">
+                            <label>B-Form</label>
+                            <input asp-for="CreateApplicant.BFormNumber" id="p_cnic" type="text" placeholder="35202-1234567-8">
+                        </div>
+                        <div class="field col-6" style="    max-width: 270px;">
+                            <label>Contact</label>
+                            <input asp-for="CreateApplicant.Contact" id="p_phone" type="tel" placeholder="0300-1234567">
+                        </div>
+                        <div class="field col-6" style="width: 180pxpx;">
+                            <label>Mother Tongue</label>
+                            <select asp-for="CreateApplicant.MotherTongue" id="p_mother_tongue">
+                                <option value="">Select</option>
+                                <option>Urdu</option>
+                                <option>English</option>
+                                <option>Punjabi</option>
+                                <option>Pashto</option>
+                                <option>Sindhi</option>
+                                <option>Balochi</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div class="field col-6" style="display:none">
+                            <label>Email (from login)</label>
+                            <input id="p_email" type="email" disabled value="amber@example.com">
+                        </div>
+                    </div>
+                    
+                    <div class="btn-row">
+                        <button class="btn ghost" onclick="goToStep(1)">Back</button>
+                        <button type="button" class="btn primary" onclick="saveStep(2)">Save & Continue</button>
+                    </div>
+                </form>
+
+                <!-- STEP 3: Education -->
+                <form id="step3" class="card step-pane hidden" asp-area="Applicants" asp-controller="Applicants" asp-action="SaveStep3" method="post">
+                    <h3>Step 3: Educational Information</h3>
+                    <div class="field col-6">
+                        <label>Current Level</label>
+                        @{
+                            var index = 1;
+                        }
+                        @if(ViewBag.EducationTab != null)
+                        {
+                            <select asp-for="ApplicantEducation.Category" id="e_level" onchange="toggleEduFields()">
+                                <option value="">-- Select Level --</option>
+                                @foreach(var category in ViewBag.EducationTab)
+                                {
+                                    <option value="@index">@category</option>
+                                    index++;
+                                }
+                            </select>
+                        }
+                        
+                    </div>
+                    <br>
+                    <!-- Extra fields (hidden by default for pre-primary/primary) -->
+                    <div id="eduExtraFields" style="display:none;flex-direction: column;">
+                        <div style="display: flex;gap: 10px;">
+                            <div class="field col-6">
+                                <label>Previous School</label>
+                                <input asp-for="ApplicantEducation.PrevSchool" id="e_school" type="text">
+                            </div>
+                            <div class="field col-6">
+                                <label>Years Attended</label>
+                                <input asp-for="ApplicantEducation.YearsAttended" id="e_years" type="text" placeholder="e.g. 2021–2024">
+                            </div>
+                        </div>
+                        <div style="display: flex;gap: 10px;">
+                            <div class="field col-3">
+                                <label>Grade</label>
+                                <input asp-for="ApplicantEducation.Grade" id="e_grade" type="text" placeholder="A, B, C">
+                            </div>
+                            <div class="field col-3">
+                                <label>Percentage</label>
+                                <input asp-for="ApplicantEducation.Percentage" id="e_percentage" type="text" placeholder="85" min="0" max="100">
+                            </div>
+                        </div>
+                        <div class="field col-6" style="margin-bottom: -65px;">
+                            <div class="upload-card">
+                                <h4>Upload Last Marksheet</h4>
+                                <input asp-for="ApplicantEducation.PreviousSchoolCertid" style="margin-top: 12px;" type="file" id="fileInput2" class="file-input" accept="image/*,.pdf">
+                                <div id="fileList"></div>
+                            </div>
+                        </div>
+                        <div class="field col-6">
+                            <div class="upload-card">
+                                <h4>Upload School Leaving Certificate</h4>
+                                <input asp-for="ApplicantEducation.PreviousSchoolLeavCertid" style="margin-top: 12px;" type="file" id="fileInput3" class="file-input" accept="image/*,.pdf">
+                                <div id="fileList"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="btn-row">
+                        <button class="btn ghost" onclick="goToStep(2)">Back</button>
+                        <button type="button" class="btn primary" onclick="saveStep(3)">Save & Continue</button>
+                    </div>
+                </form>
+
+                <!-- STEP 4: Guardians + Siblings -->
+                <div id="step4" class="card step-pane hidden">
+                    <div>
+                        <h3>Step 4: Guardian & Sibling Information</h3>
+                        <h4>Guardians</h4><br>
+                        <table class="table" id="guardianTable">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Relation</th>
+                                    <th>CNIC</th>
+                                    <th>Contact</th>
+                                    <th>Occupation</th>
+                                    <th>Gender</th>
+                                    <th>Address</th>
+                                    <th>Email</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table><br>
+                        <div style="margin:14px 0 6px;display:flex;justify-content:end;align-items:right">
+                            <button class="btn gray" onclick="showGuardianForm()">+ Add Guardian</button>
+                        </div>
+                        <!-- Guardian Form -->
+                        <div class="form-grid" id="guard_form" style="display: none;">
+                            <div style="display: flex;gap: 10px;">
+                                <div class="field col-6"><label>Guardian Name</label><input asp-for="CreateGuardian.GuardName" id="g_name" type="text"></div>
+                                <div class="field col-3">
+                                    <label>Relation</label>
+                                    <select asp-for="CreateGuardian.GuardRelation" style="width:100px;" id="g_relation">
+                                        <option value="">Select</option>
+                                        <option>Father</option>
+                                        <option>Mother</option>
+                                        <option>Other</option>
+                                    </select>
+                                </div>
+                                <div class="field col-3"><label>CNIC</label><input asp-for="CreateGuardian.CNIC" style="width:300px;" id="g_cnic" type="text"></div>
+                                <div class="field col-3">
+                                    <label>Gender</label>
+                                    <select asp-for="CreateGuardian.GuardGender" style="width:100px;" id="g_gender">
+                                        <option value="">Select</option>
+                                        <option>Male</option>
+                                        <option>Female</option>
+                                    </select>
+                                </div>
+                                <div class="field col-3"><label>Email</label><input asp-for="CreateGuardian.Email" style="width:300px;" id="g_email" type="text"></div>
+                            </div><br>
+                            <div style="display: flex;gap: 10px;width: 72.75%;">
+                                <div class="field col-6" style="width: 33.3%;"><label>Contact</label><input asp-for="CreateGuardian.Contact" id="g_contact" type="tel"></div>
+                                <div class="field col-6" style="width: 33.3%;"><label>Occupation</label><input asp-for="CreateGuardian.Occupation" id="g_job" type="text"></div>
+                                <div class="field col-6" style="width: 33.3%;"><label>Address</label><input asp-for="CreateGuardian.Address" id="g_address" type="text"></div>
+                            </div>
+                            <br>
+                            <div style="display: flex;gap: 10px;">
+                                <div class="field col-6">
+                                    <label>CNIC Front-Side Scanned Copy:</label>
+                                    <input asp-for="CreateGuardian.CnicFront" style="padding: 5px; border-radius: 15px;font-size: 15px;" id="g_cnic_front" type="file" accept=".jpg,.png,.pdf">
+                                </div>
+                                <div class="field col-6">
+                                    <label>CNIC Back-Side Scanned Copy:</label>
+                                    <input asp-for="CreateGuardian.CnicBack" style="padding: 5px; border-radius: 15px;font-size: 15px;" id="g_cnic_back" type="file" accept=".jpg,.png,.pdf">
+                                </div>
+                                <div class="field col-6" style="width:15%;">
+                                    <label>&nbsp;</label>
+                                    <button class="btn green" style="width:100%; height:38px;" onclick="addGuardianRow()">Save</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                   
+
+                    <div class="btn-row">
+                        <button class="btn ghost" onclick="goToStep(3)">Back</button>
+                        <button class="btn primary" onclick="saveStep(4)">Save & Continue</button>
+                    </div>
+                </div>
+
+                <div id="step5" class="card step-pane hidden">
+                    <div>
+                        <div style="margin:14px 0 6px;display:flex;justify-content:space-between;align-items:center">
+                            <h4>Siblings</h4>
+                        </div><br>
+                        <table class="table" id="siblingsTable">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Class</th>
+                                    <th>B-Form No.</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table><br>
+                        <div style="justify-content: end;display: flex;">
+                            <button class="btn gray" onclick="showSiblingForm()">+ Add Sibling</button>
+                        </div>
+
+                        <div id="sibling" style="display:none;gap:10px;align-items:end;flex-wrap:wrap;">
+                            <div class="field col-6" style="width:30%;">
+                                <label>Name</label>
+                                <input asp-for="AddSibling.Name" id="s_name" type="text">
+                            </div>
+                            <div class="field col-6" style="width:15%;">
+                                <label>Class</label>
+                                <input asp-for="AddSibling.ClassText" id="s_class" type="text">
+                            </div>
+                            <div class="field col-6" style="width:30%;">
+                                <label>Sibling B-Form Number</label>
+                                <input asp-for="AddSibling.BForm" id="s_bform" type="text">
+                            </div>
+                            <div class="field col-6" style="width:15%;">
+                                <label>&nbsp;</label>
+                                <button id="s_saveBtn" class="btn green" style="width:100%; height:38px;" onclick="saveSibling()">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="btn-row">
+                        <button class="btn ghost" onclick="goToStep(4)">Back</button>
+                        <button class="btn primary" onclick="saveStep(5)">Save & Continue</button>
+                    </div>
+                </div>
+
+                <!-- STEP 5: Summary -->
+                <div id="step6" class="card step-pane hidden p-3">
+                    <h4 class="mt-4 mb-3">Application Summary</h4><br>
+
+                    <div class="table-responsive">
+                        <table id="applicationDetails" class="table table-bordered table-striped">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Sr#</th>
+                                    <th>Section</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            @await Html.PartialAsync("_ApplicationSummaryPartial", Model)
+                        </table>
+                    </div>
+
+                    <div class="buttons d-flex justify-content-end mt-3" style="gap: 14px;margin-top: 40px;margin-left: 1060px; display: flex;margin-bottom: 32px;}">
+                        <!-- Submit Application Button -->
+                        <button type="button" class="btn primary" onclick="saveStep(6)">
+                            <i class="bi bi-check-circle"></i> Submit Application
+                        </button>
+
+                        <!-- View Application section -->
+                    </div>
+
+                </div>
+
+            </section>
+            <!-- Notices -->
+            <div id="changePasswordSection" class="page-section" style="display:none;">
+                @await Html.PartialAsync("_ChangePassword", new ResetPasswordViewModel())
+            </div>
+
+
+            <!-- Notices -->
+            <section id="messagesSection" class="page-section">
+                <div class="card">
+                    <h2>Notices</h2>
+                    <p>No new notices right now.</p>
+                </div>
+            </section>
+            <!-- Payments -->
+            <section id="paymentsSection" class="page-section">
+                <div class="card">
+                    <h2>Payment History</h2>
+                    <p>You have no payments on record yet.</p>
+                    <button class="generate-challan-btn btn primary">Generate Challan</button>
+                </div>
+            </section>
+            <!-- Help -->
+            <section id="helpSection" class="page-section">
+                <div class="card">
+                    <h2>Help & Support</h2>
+                    <p>Email: support@deshani.edu.pk</p>
+                </div>
+            </section>
+
+            <section id="viewApplicationSection" class="page-section" style="display:none;">
+                <div class="card shadow-lg rounded p-4" style="    height: 1250px;">
+                    <h2 class="mb-3">View Application</h2>
+                    <hr />
+
+                    <!-- Application content loads here -->
+                    <div id="applicationContent" aria-live="polite">
+                        <p>Loading application...</p>
+                    </div>
+                </div>
+            </section>
+            <!-- WhatsApp Floating Button -->
+            <a href="https://wa.me/923179369176" class="whatsapp-float" target="_blank" title="Chat with us on WhatsApp">
+                <i class="fab fa-whatsapp"></i>
+            </a>
+
+        </main>
+        <!-- Lightbox  -->
+        <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+            <img id="lightbox-img" src="">
+            <span class="close-btn" onclick="closeLightbox()">&times;</span>
+        </div>
+    </div>
+
+
+    <script defer>
+        console.log("Script loaded!");
+        // Quick Links from backend
+        window.quickLinksData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+                        Model.ClassCategoryList
+                                .SelectMany(cat => cat.Classes)
+                                .ToDictionary(
+                                        cls => cls.Id,
+                                        cls => Model.ClassCategoryList
+                          .First(c => c.Classes.Contains(cls))
+                          .QuickLinksPerClass[(int)cls.Id]
+                          .Select(q => new { q.Title, q.Url })  // Using Url from your table
+                                )
+                ));
+        //============ for handling input of steps ==========
+    </script>
+    <script src="~/js/Applicant.js"></script>
+</body>
+
+</html>

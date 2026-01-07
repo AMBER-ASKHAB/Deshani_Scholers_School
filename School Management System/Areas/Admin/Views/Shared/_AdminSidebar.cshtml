@@ -1,0 +1,66 @@
+﻿<aside class="sidebar">
+    <h2>Admin Portal</h2>
+
+    <nav>
+        <ul class="sidebar-menu">
+
+            <!-- Fee Management -->
+            <li class="collapsible" data-menu="fee">
+                <button class="collapse-toggle" style="background-color:#8b0000;color:white">
+                    <span class="label"><i class="fas fa-coins"></i> Fee Management</span>
+                    <span class="indicator rotate"><i class="fas fa-chevron-right"></i></span>
+                </button>
+                <ul class="submenu">
+                    <li class="submenu-item"><a asp-area="Admin" asp-controller="FeeSetup" asp-action="FeeSetup">Fee Head Management</a></li>
+                    <li class="submenu-item"><a asp-area="Admin" asp-controller="ClassFee" asp-action="ClassFee">Fee & Charges Amount</a></li>
+                    <li class="submenu-item"><a asp-area="Admin" asp-controller="ChallanForm" asp-action="ChallanForm">Challan Form</a></li>
+                    <li class="submenu-item"><a href="#">Generated Form</a></li>
+                </ul>
+            </li>
+
+            <!-- Class Management -->
+            <li class="collapsible" data-menu="class">
+                <button class="collapse-toggle" style="background-color:#8b0000;color:white">
+                    <span class="label"><i class="fas fa-chalkboard"></i> Class Management</span>
+                    <span class="indicator rotate"><i class="fas fa-chevron-right"></i></span>
+                </button>
+
+                <ul class="submenu">
+                    <li class="submenu-item">
+                        <a asp-area="Admin" asp-controller="ClassSetup" asp-action="ClassSetup"><i class="fas fa-plus"></i> Add Class</a>
+                    </li>
+                    <li class="submenu-item">
+                        <a href="#" onclick="showView('addSection')"><i class="fas fa-layer-group"></i> Add Sections</a>
+                    </li>
+                    <li class="submenu-item">
+                        <a href="#" onclick="showView('allocateTeacher')"><i class="fas fa-user-tie"></i> Allocate Teacher</a>
+                    </li>
+                </ul>
+            </li>
+
+            <!-- STAFF MANAGEMENT (these three items must connect to new main content views) -->
+            <li class="collapsible" data-menu="staff">
+                <button class="collapse-toggle" style="background-color:#8b0000;color:white">
+                    <span class="label">
+                        <i class="fas fa-user-tie"></i> Staff Management
+                    </span>
+                    <span class="indicator rotate">
+                        <i class="fas fa-chevron-right"></i>
+                    </span>
+                </button>
+
+                <ul class="submenu">
+                    <li class="submenu-item" id="addstaffsidebar"><a id="btnAddStaff" asp-area="Admin" asp-controller="StaffSetup" asp-action="StaffSetup">Add Staff</a></li>
+                    <li class="submenu-item" id="addstaffedusidebar"><a id="btnAddEducation" href="#" onclick="showStaffView('addEducation'); return false;">Add Staff Education</a></li>
+                    <li class="submenu-item" id="viewstaffsidebar"><a id="btnViewStaff" href="#" onclick="showStaffView('viewStaff'); return false;">View All Staff</a></li>
+                </ul>
+            </li>
+
+            <li class="collapsible">
+                <form asp-area="Auth" asp-controller="Auth" asp-action="Logout" method="post" style="margin:0;">
+                    <a class="btn btn-danger"><i class="fa-solid fa-right-to-bracket"></i> Logout</a>
+                </form>
+            </li>
+        </ul>
+    </nav>
+</aside>

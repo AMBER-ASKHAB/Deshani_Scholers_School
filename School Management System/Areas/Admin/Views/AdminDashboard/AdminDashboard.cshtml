@@ -1,0 +1,717 @@
+﻿@using School_Management_System.Areas.Admin.Models
+@model AdminDashboardViewModel
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deshani Scholars School - Admin Panel</title>
+
+    <!-- External CSS -->
+    <link rel="stylesheet" href="~/css/AdminStyle.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- External JS Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+    <!-- Topbar -->
+    <div class="topbar" style="    height: 58px;">
+        <div class="logo">
+            <img src="~/css/logo.png" alt="Logo" onerror="this.style.display='none'">
+            <span>Deshani Scholars School</span>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="main">
+        <!-- Left Sidebar Menu -->
+        <aside class="sidebar">
+            <h2>Admin Portal</h2>
+            <nav>
+                <ul class="sidebar-menu">
+                    <!-- Dashboard -->
+                    <li class="sidebar-item">
+                        <a href="#" data-section="welcomeSection" class="dashboard-link">
+                            <i class="fas fa-home"></i> Dashboard
+                        </a>
+                    </li>
+
+                    <!-- Fee Management -->
+                    <li class="collapsible" data-menu="fee">
+                        <button class="collapse-toggle">
+                            <span class="label"><i class="fas fa-coins"></i> Fee Management</span>
+                            <span class="indicator"><i class="fas fa-chevron-right"></i></span>
+                        </button>
+                        <ul class="submenu">
+                            <li class="submenu-item"><a href="#" data-section="feeSetup"><i class="fas fa-list"></i> Fee Head Management</a></li>
+                            <li class="submenu-item"><a href="#" data-section="classFee"><i class="fas fa-dollar-sign"></i> Fee & Charges Amount</a></li>
+                            <li class="submenu-item"><a href="#" data-section="challanForm"><i class="fas fa-file-invoice"></i> Challan Form</a></li>
+                            <li class="submenu-item"><a href="#" data-section="generatedChallan"><i class="fas fa-file-pdf"></i> Generated Form</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Class Management -->
+                    <li class="collapsible" data-menu="class">
+                        <button class="collapse-toggle">
+                            <span class="label"><i class="fas fa-chalkboard"></i> Class Management</span>
+                            <span class="indicator"><i class="fas fa-chevron-right"></i></span>
+                        </button>
+                        <ul class="submenu">
+                            <li class="submenu-item"><a href="#" data-section="classSetup"><i class="fas fa-plus"></i> Add Class</a></li>
+                            <li class="submenu-item"><a href="#" data-section="addSection"><i class="fas fa-layer-group"></i> Add Sections</a></li>
+                            <li class="submenu-item"><a href="#" data-section="addSubject"><i class="fas fa-layer-group"></i> Add Subjects</a></li>
+                            <li class="submenu-item"><a href="#" data-section="allocateTeacher"><i class="fas fa-user-tie"></i> Allocate Teacher</a></li>
+                            <li class="submenu-item"><a href="#" data-section="classTimeTable"><i class="fas fa-file-invoice"></i> Class Time Table</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Staff Management -->
+                    <li class="collapsible" data-menu="staff">
+                        <button class="collapse-toggle">
+                            <span class="label"><i class="fas fa-user-tie"></i> Staff Management</span>
+                            <span class="indicator"><i class="fas fa-chevron-right"></i></span>
+                        </button>
+                        <ul class="submenu">
+                            <li class="submenu-item" id="addstaffsidebar"><a href="#" data-section="addStaff"><i class="fas fa-user-plus"></i> Add Staff</a></li>
+                            <li class="submenu-item" id="addstaffedusidebar"><a href="#" data-section="addEducation"><i class="fas fa-graduation-cap"></i> Add Staff Education</a></li>
+                            <li class="submenu-item" id="viewstaffsidebar"><a href="#" data-section="viewStaff"><i class="fas fa-users"></i> View All Staff</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Logout -->
+                    <li class="collapsible">
+                        <form class="logout-form" action="/Auth/Logout" method="post">
+                            <button type="submit" class="logout-btn">
+                                <i class="fa-solid fa-right-to-bracket"></i> Logout
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Right Workspace -->
+        <div class="content" id="workspace">
+            <!-- Dashboard/Welcome Section -->
+            <section id="welcomeSection" class="workspace-section active">
+                <h2>Dashboard</h2>
+                <div class="dashboard-content">
+                    <div class="welcome-card" style="height: 99px;padding-bottom: 94px;padding-top: 24px;">
+                        <h3>Welcome to Admin Panel</h3>
+                        <p>Manage your school operations efficiently from this centralized dashboard.</p>
+                    </div>
+
+                    <div class="dashboard-stats">
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-coins"></i></div>
+                            <div class="stat-info">
+                                <h4>Fee Management</h4>
+                                <p>Manage fee heads, charges, and challans</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-chalkboard"></i></div>
+                            <div class="stat-info">
+                                <h4>Class Management</h4>
+                                <p>Setup classes, sections, and teacher allocation</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-user-tie"></i></div>
+                            <div class="stat-info">
+                                <h4>Staff Management</h4>
+                                <p>Add staff, manage education records</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="quick-actions">
+                        <h3>Quick Actions</h3>
+                        <div class="action-buttons">
+                            <button class="action-btn" onclick="switchWorkspace('feeSetup')">
+                                <i class="fas fa-list"></i> Fee Head Management
+                            </button>
+                            <button class="action-btn" onclick="switchWorkspace('classSetup')">
+                                <i class="fas fa-plus"></i> Add Class
+                            </button>
+                            <button class="action-btn" onclick="switchWorkspace('addStaff')">
+                                <i class="fas fa-user-plus"></i> Add Staff
+                            </button>
+                            <button class="action-btn" onclick="switchWorkspace('challanForm')">
+                                <i class="fas fa-file-invoice"></i> Generate Challan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========== FEE MANAGEMENT SECTIONS ========== -->
+            <!-- Fee Setup Section -->
+            <section id="feeSetup" class="workspace-section">
+                <h2>Fee And Charges Management</h2>
+                <br>
+                <div class="fee-form-layout">
+                    <div class="fee-form-left">
+                        <form id="feeForm" method="post">
+                            <input type="hidden" id="feeId">
+                            <p class="form-heading">Set Heads</p>
+                            <div class="field">
+                                <label>Select Category</label>
+                                <select asp-for="FeeSetup.Category" id="category" required>
+                                    <option value="">--Select--</option>
+                                    <option value="Admission Charges">Admission Charges</option>
+                                    <option value="Class Fee Charges">Class Fee Charges</option>
+                                    <option value="Others">Others</option>
+                                </select>
+                            </div>
+                            <br>
+                            <div class="field">
+                                <label>Enter Feehead Name</label>
+                                <input asp-for="FeeSetup.feeHEAD" id="feeHead" type="text" placeholder="Enter feehead.." required>
+                            </div>
+                            <br>
+                            <div>
+                                <button id="submitBtn" type="submit">Set Feehead</button>
+                                <button type="button" id="cancelEdit" class="cancel-btn" onclick="resetFeeForm()">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="fee-form-right">
+                        <p class="form-heading-large">Fee Heads List</p>
+                        <div class="field">
+                            <label>Select Category</label>
+                            <select id="filterCategory">
+                                <option value="">--Select--</option>
+                                <option value="Admission Charges">Admission Charges</option>
+                                <option value="Class Fee Charges">Class Fee Charges</option>
+                                <option value="Others">Others</option>
+                                <option value="All">All</option>
+                            </select>
+                        </div>
+                        <table id="feeTable" class="fee-table">
+                            <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Feehead Name</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Class Fee Section -->
+            <section id="classFee" class="workspace-section">
+                <h2>Fee And Charges Setup</h2>
+                <br>
+                <div class="fee-form-layout">
+                    <div class="fee-form-left">
+                        <form method="post" action="/Admin/AdminDashboard/SetFeeHeadsAmount" id="classFeeForm">
+                            <input type="hidden" name="editId" id="editId">
+                            <input type="hidden" name="ClassFee.editId" id="editIdHidden">
+                            <div class="field">
+                                <label>Select Category</label>
+                                <select name="ClassFee.Category" id="classFeeCategory" required>
+                                    <option value="">--Select--</option>
+                                    <option value="Admission Charges">Admission Charges</option>
+                                    <option value="Class Fee Charges">Class Fee Charges</option>
+                                    <option value="Others">Others</option>
+                                </select>
+                            </div>
+                            <br>
+                            <div class="field class-field-hidden" id="classField">
+                                <label>Select Class</label>
+                                <select name="ClassFee.classID" id="classID">
+                                    <option value="">--Select--</option>
+                                </select>
+                            </div>
+
+                            <br>
+                            <div class="field">
+                                <label>Select Feehead</label>
+                                <select name="ClassFee.feeHead" id="feeHeadS" required>
+                                    <option value="">--Select--</option>
+                                </select>
+                            </div>
+                            <br>
+                            <div class="field">
+                                <label>Enter Fee Amount</label>
+                                <input name="ClassFee.amount" type="number" id="amount" placeholder="5000.." min="0" required class="amount-input">
+                            </div>
+                            <br>
+                            <div>
+                                <button type="submit" id="submitClassFeeBtn">Set Fee</button>
+                                <button type="button" id="cancelClassFeeEdit" class="cancel-btn" onclick="resetClassFeeForm()">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="fee-form-right">
+                        <div class="field">
+                            <label>Select Category</label>
+                            <select id="tablecategory">
+                                <option value="">--Select--</option>
+                                <option value="Admission Charges">Admission Charges</option>
+                                <option value="Class Fee Charges">Class Fee Charges</option>
+                                <option value="Others">Others</option>
+                            </select>
+                        </div>
+                        <br>
+                        <div class="field class-field-hidden" id="tableclassField">
+                            <label>Select Class</label>
+                            <select id="tableclassID">
+                                <option value="">--Select--</option>
+                            </select>
+                        </div>
+                        <br>
+                        <table id="classFeeTable" class="class-fee-table">
+                            <thead>
+                                <tr>
+                                    <th>Fee Head</th>
+                                    <th>Amount</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="3" class="center">Please select a category</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Challan Form Section -->
+            <section id="challanForm" class="workspace-section">
+                <h2>Generate Challan</h2>
+                <br>
+                <form id="challanSearchForm" method="post">
+                    <div class="field">
+                        <label>Search By</label>
+                        <select id="searchType" name="searchType" class="search-type-select">
+                            <option value="">---Select---</option>
+                            <option value="regNo">Applicant ID</option>
+                            <option value="bForm">B-Form Number</option>
+                        </select>
+                    </div>
+                    <br>
+                    <div class="field hidden" id="searchById">
+                        <label>Enter Applicant ID</label>
+                        <input id="app_idSearch" type="number" placeholder="e.g. 1" min="1" class="search-input">
+                        <button type="button" id="searchBtnId">Search</button>
+                    </div>
+                    <br>
+                    <div class="field hidden" id="searchByBForm">
+                        <label>Enter B-Form Number</label>
+                        <input id="app_BFORMNO" type="text" placeholder="e.g. 12345-6789012-3">
+                        <button type="button" id="searchBtnBform">Search</button>
+                    </div>
+                </form>
+
+                <!-- Applicant Info Container (populated by JavaScript) -->
+                <div id="applicantInfoContainer"></div>
+
+                <!-- Challan Form Container (populated by JavaScript) -->
+                <div id="challanFormContainer" class="hidden"></div>
+
+                <!-- Message Container -->
+                <div id="messageContainer"></div>
+            </section>
+
+            <!-- Generated Challan Section -->
+            <section id="generatedChallan" class="workspace-section">
+                <h2>Generated Challan</h2>
+                <div id="generatedChallanContainer">
+                    <div class="challan-container" id="printChallan">
+                        <p class="challan-placeholder">
+                            Generated challans will appear here. Use the Challan Form section to generate a new challan.
+                        </p>
+                    </div>
+                    <div class="challan-actions">
+                        <button class="app-btn" onclick="window.print()">Print</button>
+                        <button id="downloadBtn" class="app-btn">Download PDF</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========== CLASS MANAGEMENT SECTIONS ========== -->
+            <!-- Class Setup Section -->
+            <section id="classSetup" class="workspace-section class-management">
+                <h2>Class Management</h2>
+                <div id="addClassView" class="view-section">
+                    <h3 class="section-title">Add Class</h3>
+                    <form id="classForm" class="form-max-width-500" action="/Admin/AdminDashboard/ClassSetup" method="post">
+                        @Html.AntiForgeryToken()
+                        <div class="field">
+                            <label>Class Name</label>
+                            <input asp-for="ClassSetup.ClassSetupModel.className" id="className" type="text" required>
+                        </div><br>
+                        <div class="field">
+                            <label>Prefix (3 letters)</label>
+                            <input asp-for="ClassSetup.ClassSetupModel.prefix" id="classPrefix" type="text" maxlength="3" required>
+                        </div><br>
+                        <div class="field">
+                            <label>Category</label>
+                            <select asp-for="ClassSetup.ClassSetupModel.category" id="classDescription" required>
+                                <option value="">--Select--</option>
+                                <option value="preprimary">Pre Primary</option>
+                                <option value="primary">Primary</option>
+                                <option value="middle">Middle</option>
+                                <option value="high">High</option>
+                            </select>
+                        </div><br>
+                        <div class="field">
+                            <label>Subject Wise Teaching</label>
+                            <select asp-for="ClassSetup.ClassSetupModel.subjectWiseTeaching" id="subjectWiseTeaching" required>
+                                <option value="">--Select--</option>
+                                <option value="true">True</option>
+                                <option value="false">False</option>
+                            </select>
+                        </div>
+                        <button type="submit">Add Class</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Add Section Section -->
+            <section id="addSection" class="workspace-section class-management">
+                <h2>Class Management</h2>
+                <div id="addSectionView" class="view-section">
+                    <h3 class="section-title">Add Section</h3>
+                    <form id="sectionForm" class="form-max-width-500" action="/Admin/AdminDashboard/AddSection" method="post">
+                        <div class="field">
+                            <label>Select Class</label>
+                            <select asp-for="ClassSetup.classSectionModel.classId" id="sectionClassDropdown" required>
+                                <option value="">-- Select Class --</option>
+                            </select>
+                        </div><br>
+                        <div class="field">
+                            <label>Section Prefix (3 letters)</label>
+                            <input asp-for="ClassSetup.classSectionModel.prefix" id="sectionPrefix" type="text" maxlength="3" required>
+                        </div><br>
+                        <div class="field">
+                            <label>Description</label>
+                            <input asp-for="ClassSetup.classSectionModel.description" id="sectionDescription" type="text" maxlength="100" required>
+                        </div><br>
+                        <div class="field">
+                            <label>Year (4 digits)</label>
+                            <input asp-for="ClassSetup.classSectionModel.year" id="sectionYear" type="text" maxlength="4" required>
+                        </div><br>
+                        <div class="field">
+                            <label>Requires Assistant</label>
+                            <select asp-for="ClassSetup.classSectionModel.requiredAssistant" id="requiresAssistant" required>
+                                <option value="">--Select--</option>
+                                <option value="true">True</option>
+                                <option value="false">False</option>
+                            </select>
+                        </div><br>
+                        <button type="submit">Add Section</button>
+                    </form>
+                </div>
+            </section>
+            <section id="addSubject" class="workspace-section class-management">
+                <h2>Class Management</h2>
+                <div id="addSubjectView" class="view-section">
+                    <h3 class="section-title">Add Subject</h3>
+                    <form id="subjectForm" class="form-max-width-500" action="#" method="post" onsubmit="return false;">
+                        <div class="field">
+                            <label>Select Class</label>
+                            <select asp-for="ClassSetup.AddSubject.classID" id="subjectClassDropdown" required>
+                                <option value="">-- Select Class --</option>
+                            </select>
+                        </div><br>
+                        <div class="field">
+                            <label>Subject Name</label>
+                            <select asp-for="ClassSetup.AddSubject.subjectID" id="subjectDropdown" required>
+                                <option value="">-- Select Subject --</option>
+                            </select>
+                        </div><br>
+                        <div class="field">
+                            <label>Subject Year</label>
+                            <input asp-for="ClassSetup.AddSubject.year" id="subjectClassyear" placeholder="2025.." required>
+                        </div><br>
+                        <button type="submit">Add Subject</button>
+                    </form>
+                    <table>
+                        <thead>
+                        <th>Subject Name</th>
+                        <th>Class</th>
+                        <th>Actions</th>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div><br>
+            </section>
+            <!-- Allocate Teacher Section -->
+            <section id="allocateTeacher" class="workspace-section class-management">
+                <h2>Class Management</h2>
+                <div id="allocateTeacherView" class="view-section">
+                    <h3 class="section-title">Allocate Teacher</h3>
+                    <form id="allocateForm" class="form-max-width-500" action="/Admin/ClassSetup/AllocateTeacher" method="post">
+                        <div class="field">
+                            <label>Select Class</label>
+                            <select asp-for="ClassSetup.allocateTeacher.classId" id="allocateClass" onchange="onClassChange()">
+                                <option value="">--Select Class--</option>
+                            </select>
+
+                        </div><br>
+                        <div class="field">
+                            <label>Select Section</label>
+                            <select asp-for="ClassSetup.allocateTeacher.sectionId" id="allocateSection">
+                                <option value="">--Select Section--</option>
+                            </select>
+                        </div><br>
+                        <div class="field" id="subjectDiv" style="display:none;">
+                            <label>Select Subject</label>
+                            <select asp-for="ClassSetup.allocateTeacher.subjectId" id="subjectSelect">
+                                <option value="">--Select Subject--</option>
+                            </select>
+                        </div><br />
+
+                        <!-- Teacher -->
+                        <div  class="field" id="teacherDiv" style="display:none;">
+                            <label>Select Teacher</label>
+                            <select asp-for="ClassSetup.allocateTeacher.teacherId" id="teacherSelect">
+                                <option value="">--Select Teacher--</option>
+                            </select>
+                        </div>
+                        <br />
+                        <!-- Assistant -->
+                        <div class="field" id="assistantDiv" style="display:none;">
+                            <label>Select Teacher Assistant (Optional)</label>
+                            <select id="assistantSelect">
+                                <option value="">--Select Assistant--</option>
+                            </select>
+                        </div>
+                        <input name="allocateTeacher.teacherId" type="hidden" id="selectedTeacherId">
+                        <button type="submit">Allocate</button>
+                    </form>
+                </div>
+            </section>
+            <section id="classTimeTable" class="workspace-section class-management">
+                <h2>Class Management</h2>
+                <div id="timeTableView" class="view-section">
+                    <h3 class="section-title">Classes Time Table</h3>
+                    <div class="field">
+                        <label>Select Class</label>
+                        <select id="TimeTableClass" onchange="onClassChange()">
+                            <option value="">--Select Class--</option>
+                        </select>
+
+                    </div><br>
+                    <div class="field">
+                        <label>Select Section</label>
+                        <select id="TimeTableSection">
+                            <option value="">--Select Section--</option>
+                        </select>
+                    </div><br>
+                    <button id="btnGenerateTimeTable" style="display:none;">
+                        Generate Time Table
+                    </button><br />
+                    <div id="timeTableContainer"></div>
+                </div>
+            </section>
+            <!-- ========== STAFF MANAGEMENT SECTIONS ========== -->
+            <!-- Add Staff Section -->
+            <section id="addStaff" class="workspace-section">
+                <h2>Staff Management</h2>
+                <div id="addStaffView" class="view-section">
+                    <h3 class="section-title">Add Staff — Personal Info</h3>
+                    <form id="staffForm" class="form-max-width-920" action="/Admin/AdminDashboard/StaffSetup" method="post">
+                        <div class="field">
+                            <label for="stf_name">Name</label>
+                            <input asp-for="StaffSetup.AddStaff.Name" id="stf_name" type="text" required placeholder="Full Name">
+                        </div>
+                        <div class="field">
+                            <label for="stf_gender">Gender</label>
+                            <select asp-for="StaffSetup.AddStaff.gender" id="stf_gender" required>
+                                <option value="">-- Select --</option>
+                                <option>Male</option>
+                                <option>Female</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label for="stf_staffnumber">Staff Number</label>
+                            <input asp-for="StaffSetup.AddStaff.stfNo" id="stf_staffnumber" type="text" maxlength="10" placeholder="e.g. S-001">
+                        </div>
+                        <div class="field">
+                            <label for="stf_desigination">Designation</label>
+                            <input asp-for="StaffSetup.AddStaff.designation" id="stf_desigination" type="text" maxlength="100">
+                        </div>
+                        <div class="field">
+                            <label for="stf_contact">Contact Number</label>
+                            <input asp-for="StaffSetup.AddStaff.contactNo" id="stf_contact" type="text" placeholder="e.g. 0300-1234567">
+                        </div>
+                        <div class="field">
+                            <label for="stf_address">Address</label>
+                            <input asp-for="StaffSetup.AddStaff.address" id="stf_address" type="text" maxlength="300">
+                        </div>
+                        <div class="flex-row">
+                            <div class="flex-1 field">
+                                <label for="stf_joiningdate">Joining Date</label>
+                                <input asp-for="StaffSetup.AddStaff.joiningdate" id="stf_joiningdate" type="date">
+                            </div>
+                            <div class="flex-1 field">
+                                <label for="stf_dob">Date of Birth</label>
+                                <input asp-for="StaffSetup.AddStaff.dob" id="stf_dob" type="date">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label for="stf_email">Email</label>
+                            <input asp-for="StaffSetup.AddStaff.email" id="stf_email" type="email" placeholder="name@example.com">
+                        </div>
+                        <div class="field">
+                            <label for="stf_nextofkin">Next of Kin</label>
+                            <input asp-for="StaffSetup.AddStaff.nextOFKin" id="stf_nextofkin" type="text" placeholder="Name,Contact,Relation">
+                        </div>
+                        <div class="flex-row">
+                            <div class="flex-1 field">
+                                <label for="stf_monthlysalary">Monthly Salary</label>
+                                <input asp-for="StaffSetup.AddStaff.salary" id="stf_monthlysalary" type="text" min="0">
+                            </div>
+                            <div class="flex-1 field">
+                                <label for="stf_ntnnumber">NTN Number</label>
+                                <input asp-for="StaffSetup.AddStaff.ntnNo" id="stf_ntnnumber" type="text" maxlength="50">
+                            </div>
+                        </div>
+                        <div class="flex-row">
+                            <div class="flex-1 field">
+                                <label for="stf_picturefilename">Picture File Name</label>
+                                <input asp-for="StaffSetup.AddStaff.pfppicname" id="stf_picturefilename" type="file" maxlength="100">
+                            </div>
+                            <div class="flex-1 field">
+                                <label for="stf_cnicfilename">CNIC File Name</label>
+                                <input asp-for="StaffSetup.AddStaff.cnicpicname" id="stf_cnicfilename" type="file" maxlength="100">
+                            </div>
+                        </div>
+                        <div class="flex-row">
+                            <div class="flex-1 field">
+                                <label for="stf_status">Marital Status</label>
+                                <select asp-for="StaffSetup.AddStaff.Status" id="stf_status">
+                                    <option value="">-- Select --</option>
+                                    <option>Married</option>
+                                    <option>Unmarried</option>
+                                    <option>Widow</option>
+                                    <option>Widower</option>
+                                </select>
+                            </div>
+                            <div class="flex-1 field">
+                                <label>Teacher or Staff</label>
+                                <div class="inline-actions">
+                                    <label><input asp-for="StaffSetup.AddStaff.isTeacher" id="stf_teacherorstaff" type="checkbox"> &nbsp; Is Academic (tick if teacher)</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label for="stf_lefton">Left On</label>
+                            <input asp-for="StaffSetup.AddStaff.lefton" id="stf_lefton" type="date">
+                            <div class="small">Leave empty if still employed.</div>
+                        </div>
+                        <br>
+                        <div class="flex-gap">
+                            <button id="btnSaveAndContinue" type="button">Save & Continue</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Add Education Section -->
+            <section id="addEducation" class="workspace-section">
+                <h2>Staff Management</h2>
+                <div id="addEducationView" class="view-section">
+                    <h3 class="section-title">Add Staff Education</h3>
+                    <div class="note">Add education entries for the selected staff member. You can add multiple records (Matric, Inter, BS, MS, etc.).</div>
+                    <form id="educationForm" class="form-max-width-720" onsubmit="return false;">
+                        <input asp-for="StaffSetup.staffEdu.stfID" type="hidden" id="sed_stfid">
+                        <div class="field">
+                            <label>Staff (selected)</label>
+                            <input id="educationSelectedStaff" type="text" readonly>
+                        </div>
+                        <div class="field">
+                            <label for="sed_degreename">Degree Name</label>
+                            <input asp-for="StaffSetup.staffEdu.degreeName" id="sed_degreename" type="text" maxlength="100" required>
+                        </div>
+                        <div class="flex-row">
+                            <div class="flex-1 field">
+                                <label for="sed_yearpassing">Year Passing</label>
+                                <input asp-for="StaffSetup.staffEdu.yearpassing" id="sed_yearpassing" type="text" maxlength="4" placeholder="e.g. 2018">
+                            </div>
+                            <div class="flex-1 field">
+                                <label for="sed_institutename">Institute Name</label>
+                                <input asp-for="StaffSetup.staffEdu.instituteName" id="sed_institutename" type="text" maxlength="150">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label for="sed_grades">Grades</label>
+                            <input asp-for="StaffSetup.staffEdu.grade" id="sed_grades" type="text" maxlength="100" placeholder="e.g. A, 947/1100, 3.75/4">
+                        </div>
+                        <div class="flex-gap-small">
+                            <button id="btnAddEducationStaff" type="button">Add Education</button>
+                            <button id="btnFinishEducation" type="button" class="btn-ghost">Finish</button>
+                        </div>
+                    </form>
+                    <table id="educationTable" class="education-table">
+                        <thead>
+                            <tr>
+                                <th>Degree</th>
+                                <th>Year</th>
+                                <th>Institute</th>
+                                <th>Grades</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- View Staff Section -->
+            <section id="viewStaff" class="workspace-section">
+                <h2>Staff Management</h2>
+                <div id="viewStaffView" class="view-section">
+                    <h3 class="section-title">View All Staff</h3>
+                    <div class="note">Click a staff row to view education details for that staff.</div>
+                    <table id="staffTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Gender</th>
+                                <th>Staff No.</th>
+                                <th>Designation</th>
+                                <th>Contact</th>
+                                <th>Is Teacher</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <div id="selectedStaffEducation" class="staff-education-container"></div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- External JavaScript -->
+    <script src="~/js/admin.js"></script>
+    <script>
+        // Verify files loaded
+        console.log('✅ index.html loaded');
+        console.log('✅ CSS should be loaded from: AdminStyle.css');
+        console.log('✅ JS should be loaded from: admin.js');
+
+        // Check if admin.js functions are available
+        if (typeof switchWorkspace === 'function') {
+            console.log('✅ admin.js loaded successfully');
+        } else {
+            console.error('❌ admin.js not loaded or functions not available');
+        }
+    </script>
+</body>
+</html>
+

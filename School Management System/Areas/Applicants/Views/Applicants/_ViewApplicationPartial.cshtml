@@ -1,0 +1,73 @@
+﻿@using School_Management_System.Areas.Applicants.Models
+@model ApplicantViewModel
+@{
+    Layout = "_ApplicantLayout";
+}
+
+<style>
+    .cardcardone {
+        width: 816px;
+        margin-left: 279px;
+        margin-top: 40px;
+        background: whitesmoke;
+        height: 894px;
+        display: none;
+    }
+    /* Section Button */
+    .section-btn {
+        padding: 12px 28px;
+        border: 2px solid #8B0000; /* Dark red border */
+        background-color: #ffffff; /* White background */
+        color: #8B0000; /* Dark red text */
+        border-radius: 30px; /* Smooth rounded edges */
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* subtle shadow */
+        margin-left:1073px;
+    }
+
+        /* Hover effect */
+        .section-btn:hover {
+            background-color: #8B0000; /* Fill with red */
+            color: #ffffff; /* White text */
+            transform: scale(1.05); /* Slight zoom */
+            box-shadow: 0 6px 10px rgba(0,0,0,0.2);
+        }
+
+        /* Active/Clicked effect */
+        .section-btn:active {
+            transform: scale(0.97); /* Slight press */
+            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+        }
+
+</style>
+@if (Model == null || Model.ApplicantId == 0)
+{
+    <div class="alert alert-warning text-center mt-4">
+        No application found to view.
+    </div>
+}else
+{
+    <!-- Summary Table -->
+    <h4 class="mb-3">Application Dashboard</h4>
+    <div class="table-responsive mb-4">
+        @await Html.PartialAsync("_dashboardview", Model)
+    </div>
+    <br />
+    <!-- Read-only Application -->
+    <!-- Button to show form -->
+    <button class="section-btn" id="viewFormBtn" >View Submitted Application Form</button>
+
+    <!-- Hidden container for the form -->
+    <div id="submittedForm" class="cardcardone" >
+        <br />
+        @await Html.PartialAsync("_ApplicationReadOnly", Model)
+    </div>
+
+
+}
+
+
+

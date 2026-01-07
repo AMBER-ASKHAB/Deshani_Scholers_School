@@ -1,0 +1,354 @@
+﻿@using School_Management_System.Areas.Applicants.Models
+@model ApplicantViewModel
+@{
+    Layout = "_ApplicantLayout";
+}
+<style>
+    .admission-form {
+    font-family: Arial, sans-serif;
+    color: black;
+    margin: 20px auto;
+    border: 2px solid black;
+    padding: 20px 30px;
+    max-width: 900px;
+    width: 700px;
+    box-sizing: border-box;
+    position: relative; /* required for watermark */
+}
+
+/* Watermark for both screen and print */
+        .admission-form::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            height: 400px;
+            background: url('@Url.Content("~/lib/logo.png")') no-repeat center;
+            background-size: contain;
+            opacity: 0.15; /* faint on screen */
+            z-index: 0;
+            pointer-events: none;
+        }
+/* Ensure text stays above watermark */
+.admission-form * {
+    position: relative;
+    z-index: 1;
+}
+
+/* Other styles remain same (headers, info-grid, signatures, buttons, etc.) */
+
+
+
+    /* Header */
+    .form-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+        .form-header .school-info {
+            text-align: center;
+            flex: 1;
+        }
+
+        .form-header h2 {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .form-header h3 {
+            margin: 5px 0;
+            text-decoration: underline;
+            font-size: 20px;
+        }
+
+    .photo-box {
+        border: 1px solid black;
+        width: 120px;
+        height: 140px;
+        text-align: center;
+        font-weight: bold;
+        margin-left: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+    }
+
+        .photo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    /* Section headings */
+    h4 {
+        margin: 25px 0 12px;
+        text-decoration: underline;
+        font-size: 16px;
+    }
+
+    /* Info rows (two-column grid) */
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px 10px;
+    }
+
+    .info-row {
+        font-size: 14px;
+        display: flex;
+        align-items: baseline;
+    }
+
+    .info-label {
+        font-weight: bold;
+        min-width: 130px;
+        flex-shrink: 0;
+    }
+
+    .info-value {
+        flex: 1;
+        border-bottom: 1px solid black;
+        min-height: 18px;
+        padding: 0 5px;
+    }
+
+    /* Guardians & Siblings */
+    .person-block {
+        padding: 12px 15px;
+        margin-bottom: 12px;
+        border-radius: 6px;
+    }
+
+    .person-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px 40px;
+    }
+
+    .person-row {
+        font-size: 14px;
+        display: flex;
+        align-items: baseline;
+    }
+
+    .person-label {
+        font-weight: bold;
+        min-width: 110px;
+        flex-shrink: 0;
+    }
+
+    .person-value {
+        flex: 1;
+        border-bottom: 1px solid black;
+        min-height: 18px;
+        padding: 0 5px;
+    }
+
+    /* Signatures */
+    .signatures {
+        margin-top: 80px;
+        display: flex;
+        justify-content: space-between;
+        text-align: center;
+    }
+
+    .signature-block {
+        flex: 1;
+        text-align: center;
+    }
+
+        .signature-block p {
+            margin-bottom: 35px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+    .signature-line {
+        border-bottom: 1px solid #000;
+        width: 80%;
+        margin: 0 auto;
+        height: 20px;
+    }
+    /* Button styles for Print / Download */
+    .action-buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px; /* space between buttons */
+        margin-top: 62px;
+    }
+
+    /* Button styles */
+    .app-btn {
+        padding: 10px 22px;
+        border: 2px solid #B22222;
+        background: #ffffff;
+        color: #B22222;
+        border-radius: 50px; /* pill shape */
+        font-weight: bold;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+        /* Hover effect */
+        .app-btn:hover {
+            background: #B22222;
+            color: #ffffff;
+        }
+
+    /* Print */
+
+@@media print {
+    .admission-form::before {
+        opacity: 0.2; /* stronger on print */
+    }
+
+    html, body {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    body * {
+        visibility: hidden;
+    }
+
+    #printSection, #printSection * {
+        visibility: visible;
+    }
+
+    #printSection {
+        position: fixed;
+        left: 0; top: 0;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 10mm;
+        box-sizing: border-box;
+        margin-top: 20px;
+    }
+
+    .admission-form {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 auto !important;
+        font-size: 12pt;
+        border: 2px solid #000;
+    }
+
+    @@page {
+        size: A4 portrait;
+        margin: 10mm;
+    }
+}
+
+</style>
+
+<div id="printSection" class="admission-form">
+    <br />
+    <br />
+    <!-- Header -->
+    <div class="form-header">
+        <div class="school-info">
+            <h2>DESHANI SCHOLARS SCHOOL</h2>
+            <p>Wazir Town, Rawalpindi</p>
+            <h3>ADMISSION FORM</h3>
+        </div>
+        <div class="photo-box">
+            @if (!string.IsNullOrEmpty(Model.CreateApplicant.ProfilePicFilePath))
+            {
+                <img src="@Url.Content(Model.CreateApplicant.ProfilePicFilePath)" alt="Profile Photo" />
+            }
+            else
+            {
+                <span>PHOTO</span>
+            }
+        </div>
+    </div>
+
+    <!-- Student Info -->
+    <h4>Student Information</h4>
+    <div class="info-grid">
+        <div class="info-row"><span class="info-label">Name of Student:</span><span class="info-value">@Model.CreateApplicant.FullName</span></div>
+        <div class="info-row"><span class="info-label">Father Name:</span><span class="info-value">@Model.Guardians[0].GuardName</span></div>
+        <div class="info-row"><span class="info-label">Applied For Class:</span><span class="info-value">@Model.AppliedClass.classDesc</span></div>
+        <div class="info-row"><span class="info-label">Gender:</span><span class="info-value">@Model.CreateApplicant.Gender</span></div>
+        <div class="info-row"><span class="info-label">Date of Birth:</span><span class="info-value">@Model.CreateApplicant.DateOfBirth?.ToString("dd/MM/yyyy")</span></div>
+        <div class="info-row"><span class="info-label">Mother Tongue:</span><span class="info-value">@Model.CreateApplicant.MotherTongue</span></div>
+        <div class="info-row"><span class="info-label">B-Form No:</span><span class="info-value">@Model.CreateApplicant.BFormNumber</span></div>
+        <div class="info-row"><span class="info-label">Contact:</span><span class="info-value">@Model.Guardians[0].Contact</span></div>
+    </div>
+
+    <!-- Guardians -->
+    <h4>Guardian Information</h4>
+    @if (Model.Guardians != null && Model.Guardians.Any())
+    {
+        @foreach (var g in Model.Guardians)
+        {
+            <div class="person-block">
+                <div class="person-grid">
+                    <div class="person-row"><span class="person-label">Name:</span><span class="person-value">@g.GuardName</span></div>
+                    <div class="person-row"><span class="person-label">Relation:</span><span class="person-value">@g.GuardRelation</span></div>
+                    <div class="person-row"><span class="person-label">CNIC:</span><span class="person-value">@g.CNIC</span></div>
+                    <div class="person-row"><span class="person-label">Contact:</span><span class="person-value">@g.Contact</span></div>
+                    <div class="person-row"><span class="person-label">Occupation:</span><span class="person-value">@g.Occupation</span></div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <p>No guardians found.</p>
+    }
+
+    <!-- Siblings -->
+    <h4>Sibling Information</h4>
+    @if (Model.Siblings != null && Model.Siblings.Any())
+    {
+        @foreach (var s in Model.Siblings)
+        {
+            <div class="person-block">
+                <div class="person-grid">
+                    <div class="person-row"><span class="person-label">Name:</span><span class="person-value">@s.Name</span></div>
+                    <div class="person-row"><span class="person-label">Class:</span><span class="person-value">@s.ClassText</span></div>
+                    <div class="person-row"><span class="person-label">B-Form No:</span><span class="person-value">@s.BForm</span></div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <p>No siblings found.</p>
+    }
+
+    <!-- Signatures -->
+    <div class="signatures">
+        <div class="signature-block">
+            <p><strong>Parent’s Signature:</strong></p>
+            
+            <div class="signature-line"></div>
+        </div>
+        <div class="signature-block">
+            <p><strong>Date:</strong></p>
+            
+            <div class="signature-line"></div>
+        </div>
+        <div class="signature-block">
+            <p><strong>Principal’s Signature:</strong></p>
+            
+            <div class="signature-line"></div>
+        </div>
+    </div>
+</div>
+<!-- Buttons -->
+<div class="action-buttons">
+    <button class="app-btn" onclick="window.print()">Print</button>
+    <button id="downloadBtn" class="app-btn">Download PDF</button>
+</div>
+
+
+

@@ -1,0 +1,79 @@
+﻿@using School_Management_System.Areas.Auth.Models
+@model SignupViewModel
+@{
+    ViewData["Title"] = "Sign Up";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Sign Up</title>
+    <link rel="stylesheet" href="/css/Signup.css">
+</head>
+<body>
+    <div class="form-container">
+        <h2>Student Sign Up</h2>
+        <div class="logo-container">
+            <img src="/lib/logo.png" alt="PIAIC Logo">
+        </div>
+
+
+        <form id="signupForm" asp-action="Signup" method="post" >
+            <label for="cnic">Username</label>
+            <input asp-for="EmailAddress" type="text" id="cnic"  placeholder="Enter EmailAddress" required>
+            <span asp-validation-for="EmailAddress" class="text-danger"></span>
+            
+
+            <label for="password">Password</label>
+            <input asp-for="Password" type="password" id="password"  placeholder="Enter password" required>
+            <span asp-validation-for="Password" class="text-danger"></span>
+
+            <label for="password">Confirm Password</label>
+            <input asp-for="ConfirmPassword" type="password" id="password" placeholder="Enter Confirm password" required>
+            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+
+            <p class="already">Already a member? <a a asp-controller="Auth" asp-action="Login"><b>Sign in</b></a></p>
+            <p class="terms">
+                By Clicking 'Sign Up' button, I confirm that all the information provided above is valid, truthful
+                and belongs to me and DESHANI reserves the right to take necessary action for incorrect or misleading information
+            </p>
+
+            <button type="submit">Sign Up</button>
+        </form>
+    </div>
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <div class="checkmark-container">
+                <div class="checkmark"></div>
+            </div>
+            <h2>Account Created</h2>
+            <p>
+                We've sent an account activation email to <b>@ViewBag.Email</b>.<br>
+                Please check your inbox for the activation link.
+            </p>
+            <button onclick="closeModal()">OK</button>
+        </div>
+    </div>
+    <script>
+            function closeModal() {
+                document.getElementById("successModal").style.display = "none";
+        }
+
+            window.onload = function() {
+            var signupSuccess = '@ViewBag.SignupSuccess';
+            if (signupSuccess === 'True') {
+                document.getElementById("successModal").style.display = "block";
+            }
+        };
+    </script>
+
+    
+
+    <script src="/js/Signup.js"></script>
+</body>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+</html>

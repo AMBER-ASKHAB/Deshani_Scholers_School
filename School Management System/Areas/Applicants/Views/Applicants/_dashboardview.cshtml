@@ -1,0 +1,20 @@
+﻿@using School_Management_System.Areas.Applicants.Models
+@model ApplicantViewModel
+<table class="table table-bordered table-striped">
+    <thead class="table-light">
+        <tr>
+            <th>Applicant ID</th>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Applied For Class</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>@Model.ApplicantId</td>
+            <td>@Model.CreateApplicant.FullName</td>
+            <td>@Model.CreateApplicant.status</td>
+            <td>@Model.AppliedClass.classDesc</td>
+        </tr>
+    </tbody>
+</table>

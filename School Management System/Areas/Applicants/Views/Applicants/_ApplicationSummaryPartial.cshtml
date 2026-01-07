@@ -1,0 +1,56 @@
+﻿@using School_Management_System.Areas.Applicants.Models
+@model ApplicantViewModel
+<tbody>
+    <tr>
+        <td>1</td>
+        <td>Class Selection</td>
+        <td>
+            <span class="status-badge @(Model.IsClassSelectionCompleted ? "completed" : "in-progress")">
+                @(Model.IsClassSelectionCompleted ? "Completed" : "In-Complete")
+            </span>
+        </td>
+        <td>
+            <button type="button" class="btn btn-sm btn-view" onclick="goToStep(1)">View</button>
+            <button type="button" class="btn btn-sm btn-edit" onclick="goToStep(1)">Edit</button>
+        </td>
+    </tr>
+    <tr>
+        <td>2</td>
+        <td>Personal Information</td>
+        <td>
+            <span class="status-badge @(Model.IsPersonalInfoCompleted ? "completed" : "in-progress")">
+                @(Model.IsPersonalInfoCompleted ? "Completed" : "In-Complete")
+            </span>
+        </td>
+        <td>
+            <button type="button" class="btn btn-sm btn-view" onclick="goToStep(2)">View</button>
+            <button type="button" class="btn btn-sm btn-edit" onclick="goToStep(2)">Edit</button>
+        </td>
+    </tr>
+    <tr>
+        <td>3</td>
+        <td>Education Information</td>
+        <td>
+            <span class="status-badge @(Model.IsEducationInfoCompleted ? "completed" : "in-progress")">
+                @(Model.IsEducationInfoCompleted ? "Completed" : "In-Complete")
+            </span>
+        </td>
+        <td>
+            <button type="button" class="btn btn-sm btn-view" onclick="goToStep(3)">View</button>
+            <button type="button" class="btn btn-sm btn-edit" onclick="goToStep(3)">Edit</button>
+        </td>
+    </tr>
+    <tr>
+        <td>4</td>
+        <td>Guardian & Siblings Information</td>
+        <td>
+            <span class="status-badge @(Model.IsGuardianSiblingInfoCompleted ? "completed" : "in-progress")">
+                @(Model.IsGuardianSiblingInfoCompleted ? "Completed" : "In-Complete")
+            </span>
+        </td>
+        <td>
+            <button type="button" class="btn btn-sm btn-view" onclick="goToStep(4)">View</button>
+            <button type="button" class="btn btn-sm btn-edit" onclick="goToStep(4)">Edit</button>
+        </td>
+    </tr>
+</tbody>

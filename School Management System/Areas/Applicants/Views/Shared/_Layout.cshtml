@@ -1,0 +1,17 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Deshani Scholers School</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/School_Management_System.styles.css" asp-append-version="true" />
+    <link rel="icon" type="image/x-icon" href="/lib/logo.png">
+</head>
+@RenderBody()
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+ @RenderSection("Scripts", required: false);
+</html>

@@ -1,0 +1,114 @@
+﻿@using School_Management_System.Areas.Auth.Models
+@model LoginViewModel
+@{
+    ViewData["Title"] = "Sign In";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Student Sign in</title>
+    <link rel="stylesheet" href="/css/LoginStye.css">
+</head>
+<body>
+    <div class="login-container" style="height:701px; max-width: 601px;">
+        <h2>Student Sign in</h2>
+        <div class="logo">
+            <img src="/lib/logo.png" alt="DESHANI Logo">
+        </div>
+        @if (ViewBag.Error != null)
+        {
+            <div class="error-message" style="color: red; font-weight: bold; margin-bottom: 10px;">
+                @ViewBag.Error
+            </div>
+        }
+        <form id="loginForm" asp-action="Login" method="post" style="width:398px">
+            <label for="email">Username/Email</label>
+            <input  asp-for="Email" type="email" id="email" placeholder="Enter Username/Email" required />
+            <span asp-validation-for="Email" id="email" class="text-danger"></span>
+            <label for="password">Password</label>
+            <div style="position: relative; width: 100%;">
+                <input asp-for="Password"
+                       type="password"
+                       id="password"
+                       placeholder="Enter password"
+                       required
+                       style="padding-right: 35px; width:100%;" />
+
+                <!-- Eye icon inside the input -->
+                <span onclick="togglePassword()"
+                      style="position: absolute; right: 10px; top: 40%; transform: translateY(-50%); cursor: pointer; font-size: 19px;">
+                    👁
+                </span>
+            </div>
+            <span asp-validation-for="Password" class="text-danger"></span>
+
+            <div class="login-links">
+                <span class="signup-link">Not a member? <a a asp-controller="Auth" asp-action="Signup">Sign up</a></span>
+                <span class="forgot-link"><a href="#" onclick="openModal()">Forgot password?</a></span>
+            </div>
+            @if (ViewBag.Message != null)
+            {
+                <p style="color:red; margin-top:10px;">@ViewBag.Message</p>
+            }
+            @if (TempData["Message"] != null)
+            {
+                <div class="alert alert-success">@TempData["Message"]</div>
+            }
+
+            <div class="remember-me" style="margin-top: 9px;">
+                <input type="checkbox" id="rememberMe" name="rememberMe" />
+                <label for="rememberMe">Remember me</label>
+            </div>
+            <button type="submit" href="#">Sign in</button>
+        </form>
+
+    </div>
+    <!-- Modal -->
+    <div class="modal" id="emailModal">
+        <div class="modal-content" style="max-width: 466px;height: 257px;">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h2>Enter your Email:</h2>
+
+            <!-- Form posting to Forgetpassword -->
+            <form asp-action="Forgetpassword" asp-controller="Auth" method="post" style="width: 380px;">
+                <input type="email" name="email" placeholder="Enter email address" required>
+                <button type="submit">Send email</button>
+            </form>
+
+            <!-- Show message from controller -->
+           
+        </div>
+    </div>
+
+
+    <script >
+            function openModal() {
+          document.getElementById("emailModal").style.display = "flex";
+        }
+
+        function closeModal() {
+          document.getElementById("emailModal").style.display = "none";
+        }
+
+        // Close when clicking outside modal content
+        window.onclick = function(e) {
+          const modal = document.getElementById("emailModal");
+          if (e.target === modal) {
+            modal.style.display = "none";
+          }
+        };
+        //=== password hide
+        function togglePassword() {
+            var passwordField = document.getElementById("password");
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+            } else {
+                passwordField.type = "password";
+            }
+        }
+
+        </script>
+</body>
+</html>
