@@ -86,7 +86,7 @@ namespace Application.Services
         private void updateBanFailedAttempts(Banda user)
         {
             user.BanFailedAttempts++;
-            if (user.BanFailedAttempts >= 2)
+            if (user.BanFailedAttempts >= 10)
             {
                 user.BanActive = false;
             }
@@ -94,32 +94,33 @@ namespace Application.Services
             _context.SaveChanges();
         }
         //============ SIGNUP
-        bool  IAuthServices.Register(string email, string password)
+        async Task<bool> IAuthServices.Register(string email, string password)
         {
             bool usernameExists = _context.Bandas.Any(b => b.Ban_username == email);
             if (usernameExists)
             {
                 return false;
             }
-            else
+
+            password = BCrypt.Net.BCrypt.HashPassword(password);
+
+            var user = new Banda
             {
-                //  Hashing password 
-                password = BCrypt.Net.BCrypt.HashPassword(password);
-                var user = new Banda
-                {
-                    Ban_username = email,
-                    BanPassword = password,
-                    BanActive = true,
-                    BanRole = "student",
-                    BanCurrentlyLogin = false,
-                    BanFailedAttempts = 0,
-                    BanCreatedAt= DateTime.UtcNow,
-                };
-                _context.Bandas.Add(user);
-                _context.SaveChangesAsync();
-                return true;
-            }
+                Ban_username = email,
+                BanPassword = password,
+                BanActive = true,
+                BanRole = "applicant",
+                BanCurrentlyLogin = false,
+                BanFailedAttempts = 0,
+                BanCreatedAt = DateTime.UtcNow,
+            };
+
+            _context.Bandas.Add(user);
+            await _context.SaveChangesAsync();   // ✅ IMPORTANT
+
+            return true;
         }
+
 
         public async Task SendActivationEmail(string toEmail, string activationLink)
         {

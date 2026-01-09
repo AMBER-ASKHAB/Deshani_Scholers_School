@@ -14,11 +14,13 @@ using System.Reflection.Metadata.Ecma335;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace School_Management_System.Controllers
 {
     [Area("Applicants")]
     [Route("Applicants/[action]")]
+    [Authorize(Roles = "applicant,student")]
     public class ApplicantsController : Controller
     {
         bool app_completed = false;

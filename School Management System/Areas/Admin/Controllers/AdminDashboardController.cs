@@ -2,6 +2,7 @@
 using Domain.Entities;
 using Domain.Entities.Application;
 using Infrastructure.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using School_Management_System.Areas.Admin.Models;
@@ -13,6 +14,7 @@ using System.Text.Json;
 namespace School_Management_System.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "admin")]
     public class AdminDashboardController : Controller
     {
         private readonly SMSDbContext mDB;
@@ -21,6 +23,19 @@ namespace School_Management_System.Areas.Admin.Controllers
         {
             mDB = db;
         }
+        // Approve applicant
+        //[HttpPost]
+        //public IActionResult ApproveApplicant(int id)
+        //{
+        //    var user = mDB.Bandas.FirstOrDefault(u => u.BanId == id);
+        //    if (user == null) return NotFound();
+
+        //    user.BanRole = "student";  // applicant -> student
+        //    user.BanActive = true;     // optional: mark account active
+        //    mDB.SaveChanges();
+
+        //    return RedirectToAction("AdminDashboard");
+        //}
         [HttpGet]
         public IActionResult AdminDashboard()
         {
