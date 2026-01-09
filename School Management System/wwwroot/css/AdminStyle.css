@@ -855,3 +855,71 @@ tr:hover td {
         padding: 0;
     }
 }
+.challan-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    margin-top: 10px;
+    flex-wrap: nowrap;
+}
+
+.challan {
+    border: 1px solid #000;
+    padding: 8px;
+    width: 32.8%;
+    box-sizing: border-box;
+    background-color: white;
+}
+
+    .challan .copy-type {
+        text-align: center;
+        font-weight: bold;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+    }
+
+    .challan .schoolname {
+        text-align: center;
+        font-weight: bold;
+        margin-bottom: 8px;
+        font-family: Cambria, serif;
+        font-size: 15px;
+    }
+
+    .challan table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+    }
+
+        .challan table th:first-child,
+        .challan table td:first-child {
+            width: 70%;
+            text-align: left;
+            border: 1px solid black;
+            padding: 3px 3px;
+        }
+
+        .challan table th:last-child,
+        .challan table td:last-child {
+            width: 30%;
+            text-align: left;
+            border: 1px solid black;
+            padding: 3px 3px;
+        }
+
+#applicantTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    display: none;
+    border: 1px solid black;
+}
+
+    #applicantTable tr th,
+    #applicantTable tr td {
+        border: 1px solid black;
+        text-align: center;
+    }

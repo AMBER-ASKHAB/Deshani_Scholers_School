@@ -39,5 +39,6 @@ namespace Domain.Entities
 
         [MaxLength(100)]
         public string? acf_discountapprovalfilename { get; set; }
+        public int acf_amountHeads { get; set; }
     }
 }

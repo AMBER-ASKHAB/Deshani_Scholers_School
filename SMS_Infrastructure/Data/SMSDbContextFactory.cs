@@ -15,7 +15,7 @@ namespace Infrastructure.Data
             var optionsBuilder = new DbContextOptionsBuilder<SMSDbContext>();
 
             // Replace with your actual connection string
-            var connectionString = "Server=DESKTOP-DESKPUC;Database=SchoolMagementSystem;Trusted_Connection=True;TrustServerCertificate=True;";
+            var connectionString = "Server=MUHAMMAD_USMAN\\SQLEXPRESS;Database=SchoolMagementSystem;Trusted_Connection=True;TrustServerCertificate=True;";
 
             optionsBuilder.UseSqlServer(connectionString);
 

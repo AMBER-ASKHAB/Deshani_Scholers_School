@@ -2302,9 +2302,9 @@ function renderChallanForm(feeData, challanType, applicantData) {
     const challanContainer = document.getElementById('challanFormContainer');
 
     let html = `
-        <form id="challanForm" method="post" action="/Admin/AdminDashboard/GenerateChallan" style="width:100%;">
-            <input type="hidden" name="challanType" value="${challanType}" />
-            <input type="hidden" name="app_id" value="${applicantData.applicant.id}" />
+        <form id="challanGenerateForm" method="post" action="/Admin/AdminDashboard/GenerateChallan" enctype="multipart/form-data" style="width:100%;">
+            <input type="hidden" name="GeneratedChallan.challanType" value="${challanType}" />
+            <input type="hidden" name="GeneratedChallan.app_id" value="${applicantData.applicant.id}" />
             <div class="flex-row" style="display:flex;">
                 <div style="width:35%;">
                     <div class="field">
@@ -2314,12 +2314,12 @@ function renderChallanForm(feeData, challanType, applicantData) {
                     <br>
                     <div class="field">
                         <label>Due Date of Submission</label>
-                        <input name="dueDate" type="date" id="dueDate" required min="${new Date().toISOString().split('T')[0]}" />
+                        <input name="GeneratedChallan.dueDate" type="date" id="dueDate" required min="${new Date().toISOString().split('T')[0]}" />
                     </div>
                     <br>
                     <div class="field">
                         <label>No of Days after Due Date</label>
-                        <input name="fineDate" type="number" min="1" max="30" step="1" id="expiryDate" placeholder="e.g., 7" required />
+                        <input name="GeneratedChallan.fineDate" type="number" min="1" max="30" step="1" id="expiryDate" placeholder="e.g., 7" required />
                     </div>
                 </div>
                 <div style="width:65%;" id="challanDetailsBox"></div>
@@ -2354,10 +2354,10 @@ function renderChallanForm(feeData, challanType, applicantData) {
         wrapper.classList.add('fee-row');
         wrapper.innerHTML = `
         <input type="text" class="fee-input" style="flex: 2;" value="${escapeHtml(item.feeHead)}" readonly />
-        <input type="number" class="fee-input" style="flex: 1;" name="FeeHeads[${index}].Value" value="${item.feeAmount}" readonly id="amount-${index}" />
-        <input type="hidden" name="FeeHeads[${index}].Key" value="${escapeHtml(item.feeHead)}" />
-        <input type="hidden" name="FeeHeads[${index}].FacId" value="${item.facId}" />
-        <input type="hidden" name="FeeHeads[${index}].FcmId" value="${item.fcmId}" />
+        <input type="number" class="fee-input" style="flex: 1;" name="GeneratedChallan.FeeHeads[${index}].Value" value="${item.feeAmount}" readonly id="amount-${index}" />
+        <input type="hidden" name="GeneratedChallan.FeeHeads[${index}].Key" value="${escapeHtml(item.feeHead)}" />
+        <input type="hidden" name="GeneratedChallan.FeeHeads[${index}].FacId" value="${item.facId}" />
+        <input type="hidden" name="GeneratedChallan.FeeHeads[${index}].FcmId" value="${item.fcmId}" />
         <button type="button" id="edit-${index}" class="edit-btn disabled">Edit</button>
     `;
         challanDetailsBox.appendChild(wrapper);
@@ -2433,9 +2433,9 @@ function renderChallanForm(feeData, challanType, applicantData) {
             }
         });
     });
-
+    const challanForm = document.getElementById('challanGenerateForm');
     // ========== UPDATED FORM SUBMISSION ==========
-    document.getElementById('challanForm').addEventListener('submit', function (e) {
+    document.getElementById('challanGenerateForm').addEventListener('submit', function (e) {
         e.preventDefault(); // Prevent default form submission
 
         const dueDate = document.getElementById('dueDate').value;
@@ -2464,9 +2464,9 @@ function renderChallanForm(feeData, challanType, applicantData) {
         const generateBtn = document.getElementById('generateChallanBtn');
         generateBtn.disabled = true;
         generateBtn.textContent = 'Generating Challan...';
-
+       
         // Create FormData object
-        const formData = new FormData(this);
+        const formData = new FormData(challanForm);
 
         // Add anti-forgery token
         const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
@@ -2482,11 +2482,13 @@ function renderChallanForm(feeData, challanType, applicantData) {
                 'X-Requested-With': 'XMLHttpRequest' // Identify as AJAX request
             }
         })
-            .then(response => {
+            .then(async response => {
+                const text = await response.text();
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    console.error('Server returned:', text);
+                    throw new Error(text);
                 }
-                return response.json();
+                return JSON.parse(text);
             })
             .then(data => {
                 if (data.success) {
@@ -2501,7 +2503,7 @@ function renderChallanForm(feeData, challanType, applicantData) {
                     // Load the generated challan HTML into the container
                     const printChallan = document.getElementById('printChallan');
                     if (printChallan) {
-                        printChallan.innerHTML = data.challanHtml;
+                        renderGeneratedChallan(data.data);
                     }
 
                     showMessage('Challan generated successfully!', 'success');
@@ -2519,6 +2521,52 @@ function renderChallanForm(feeData, challanType, applicantData) {
             });
     });
 }
+
+function renderGeneratedChallan(data) {
+    const challans = document.querySelectorAll('.challan');
+
+    challans.forEach(challan => {
+
+        challan.querySelector('#schoolName').textContent = data.schoolName;
+        challan.querySelector('#bankName').textContent = data.bankName;
+        challan.querySelector('#branchLocation').textContent = data.branchLocation;
+
+        challan.querySelector('#accountTitle').textContent = `Account Title: ${data.accountTitle}`;
+        challan.querySelector('#accountNumber').textContent = data.accountNumber;
+
+        challan.querySelector('#studentName').textContent = data.applicantName;
+        challan.querySelector('#guardianName').textContent = data.guardianName;
+        challan.querySelector('#regNo').textContent = data.registrationNo;
+        challan.querySelector('#className').textContent = data.className;
+
+        challan.querySelector('#totalAmount').textContent = data.totalAmount;
+        challan.querySelector('#payableBeforeDue').textContent = data.totalAmount;
+
+        challan.querySelector('#dueDate').textContent =
+            new Date(data.dueDate).toLocaleDateString();
+
+        challan.querySelector('#issueDate').textContent =
+            new Date().toLocaleDateString();
+
+        challan.querySelector('#expiryDate').textContent =
+            new Date(data.dueDate)
+                .setDate(new Date(data.dueDate).getDate() + data.fineDays);
+    });
+
+    // Fee Heads (same for all copies)
+    const feeBody = document.getElementById('feeTableBody');
+    feeBody.innerHTML = '';
+
+    data.feeHeads.forEach(fee => {
+        feeBody.innerHTML += `
+            <tr>
+                <td style="width:65%;border:1px solid black;text-align:left">${fee.feeName}</td>
+                <td style="width:35%;border:1px solid black;text-align:left">${fee.amount}</td>
+            </tr>
+        `;
+    });
+}
+
 function updateChallanTotalAmount() {
     let total = 0;
     const amountInputs = document.querySelectorAll('[id^="amount-"]');

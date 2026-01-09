@@ -1,4 +1,5 @@
 ﻿using Domain.Dto;
+using Domain.Dto.Admin;
 using Domain.Entities;
 using Domain.Entities.Application;
 using Infrastructure.Data;
@@ -383,44 +384,140 @@ namespace School_Management_System.Areas.Admin.Controllers
             return Json(fees);
 
         }
-        [HttpPost("GenerateChallan")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult GenerateChallan(ChallanFormViewModel model)
+        public IActionResult GenerateChallan(AdminDashboardViewModel model)
         {
-            if (ModelState.IsValid)
+            var challan = model.GeneratedChallan;
+
+            if (challan == null)
+                return BadRequest("Invalid challan data");
+
+            var applicant = mDB.Applicants.FirstOrDefault(x => x.Id == challan.app_id);
+            if (applicant == null)
+                return BadRequest("Applicant not found");
+
+            var school = mDB.schools.FirstOrDefault(x => x.sch_id == applicant.SchoolId);
+            if (school == null)
+                return BadRequest("School not found");
+
+            using var transaction = mDB.Database.BeginTransaction();
+
+            try
             {
-                var applicant = mDB.Applicants.FirstOrDefault(x => x.Id == model.app_id);
-                if (applicant != null)
-                {
-                    var school = mDB.schools.FirstOrDefault(x => x.sch_id == applicant.SchoolId);
-                    saveChallanDetails(applicant, school, model);
-                    makingViewBags(applicant, school, model);
-                    return View("~/Areas/Admin/Views/GeneratedChallan/GeneratedChallan.cshtml");
-                }
+                // 1️⃣ Save challan heads
+                SaveFeeHeads(challan, school.sch_id);
+
+                // 2️⃣ Save main challan
+                var admissionChallan = SaveAdmissionChallan(challan, applicant, school);
+
+                // 3️⃣ Save challan details
+                SaveAdmissionChallanDetails(challan, admissionChallan, school.sch_id);
+                var printDto = BuildGeneratedChallanDTO(admissionChallan,applicant,school);
+                ViewBag.PrintDTO = printDto;
+                transaction.Commit();
+
+                return Json(new { success = true,data=printDto });
             }
-
-            // If invalid, just return the same form (you can rehydrate ViewBags if needed)
-            return View("ChallanForm", model);
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                return Json(new { success = false, message = ex.Message });
+            }
         }
-
-        private void saveChallanDetails(Applicant applicant, Schools school, ChallanFormViewModel model)
+        
+        private void SaveFeeHeads(GeneratedChallanViewModel model, long schoolId)
         {
-            var chTable = new AdmissionChallan
+            var challanHeads = model.FeeHeads.Select(fee => new ChallanHeads
+            {
+                chh_schid = (int)schoolId,
+                chh_Appid = model.app_id,
+                chh_name = fee.Key,
+                chh_amount = fee.Value
+            }).ToList();
+
+            mDB.ChallanHeads.AddRange(challanHeads);
+            mDB.SaveChanges();
+        }
+        private AdmissionChallan SaveAdmissionChallan(GeneratedChallanViewModel model,Applicant applicant,Schools school)
+        {
+            var challan = new AdmissionChallan
             {
                 acf_schid = school.sch_id,
                 acf_appid = applicant.Id,
-                acf_dateofissue = DateTime.Today,
+                acf_dateofissue = DateTime.Now,
                 acf_tobepaidby = model.dueDate,
-                // Example: 0–7 days single fine, 8–14 double fine.
-                acf_expirydate = model.dueDate.AddDays(model.fineDate * 2),
-                acf_preparedby = 1,
-                acf_totalamount = (long)Math.Round(model.TotalAmount),
-                acf_fineAfterDueDate = 500
+                acf_expirydate = model.dueDate.AddDays(model.fineDate),
+                acf_preparedby = 1, // TODO: Logged-in staff
+                acf_totalamount = model.FeeHeads.Sum(x => x.Value),
+                acf_fineAfterDueDate = model.fineDate,
+                acf_amountHeads = model.FeeHeads.Count
             };
 
-            mDB.Add(chTable);
+            mDB.admissionChallan.Add(challan);
+            mDB.SaveChanges(); // PK GENERATED HERE
+
+            return challan;
+        }
+        private void SaveAdmissionChallanDetails(GeneratedChallanViewModel model,AdmissionChallan challan,long schoolId)
+        {
+            var details = model.FeeHeads.Select(fee => new AdmissionChallanDetails
+            {
+                acd_schid = schoolId,
+                acd_acfid = challan.acf_id,     // FK from parent
+                acd_detialid = fee.FcmId,       // Or FacId (your business logic)
+                acd_chargestype = fee.Key,
+                acd_amount = fee.Value
+            }).ToList();
+
+            mDB.admissionChallanDetails.AddRange(details);
             mDB.SaveChanges();
         }
+        private GeneratedChallanPrintDTO BuildGeneratedChallanDTO(AdmissionChallan challan,Applicant applicant,Schools school)
+        {
+            // Bank details
+            var bank = mDB.bankDetails
+                .FirstOrDefault(x => x.bnk_schid == school.sch_id);
+
+            // Guardian (pick first)
+            var guardian = mDB.ApplicantGuardians
+                .FirstOrDefault(x => x.Id == applicant.Id);
+
+            // Fee heads (from DB)
+            var feeHeads = mDB.ChallanHeads
+                .Where(x =>
+                    x.chh_Challanid == challan.acf_id &&
+                    x.chh_Appid == applicant.Id)
+                .Select(x => new ChallanFeeHeadDTO
+                {
+                    FeeName = x.chh_name,
+                    Amount = x.chh_amount
+                })
+                .ToList();
+
+            return new GeneratedChallanPrintDTO
+            {
+                // School
+                SchoolName = school.sch_name,
+                BankName = bank?.bnk_name,
+                BranchLocation = bank?.bnk_branchLocation,
+                AccountTitle = bank?.bnk_accounttitle,
+                AccountNumber = bank?.bnk_accountnumber,
+
+                // Applicant
+                ApplicantName = applicant.FullName,
+                GuardianName = guardian?.FullName ?? "N/A",
+                RegistrationNo = applicant.Id.ToString(),
+                ClassName = applicant.AppliedForClassId?.ToString(),
+
+                // Challan
+                DueDate = challan.acf_tobepaidby,
+                FineDays = (int)challan.acf_fineAfterDueDate,
+                TotalAmount = challan.acf_totalamount,
+                FeeHeads = feeHeads
+            };
+        }
+
 
         private void makingViewBags(Applicant applicant, Schools school, ChallanFormViewModel model)
         {

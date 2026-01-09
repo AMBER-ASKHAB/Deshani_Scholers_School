@@ -29,6 +29,7 @@ namespace Infrastructure.Data
         public DbSet<ClassTimeTable> ClassTimeTable { get; set; }
         public DbSet<SchoolParams> SchoolParams { get; set; }
         public DbSet<Subjects> Subjects { get; set; }
+        public DbSet<ChallanHeads> ChallanHeads { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

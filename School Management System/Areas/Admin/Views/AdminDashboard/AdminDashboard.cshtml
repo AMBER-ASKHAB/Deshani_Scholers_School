@@ -287,6 +287,7 @@
 
             <!-- Challan Form Section -->
             <section id="challanForm" class="workspace-section">
+                @Html.AntiForgeryToken()
                 <h2>Generate Challan</h2>
                 <br>
                 <form id="challanSearchForm" method="post">
@@ -326,10 +327,223 @@
             <section id="generatedChallan" class="workspace-section">
                 <h2>Generated Challan</h2>
                 <div id="generatedChallanContainer">
-                    <div class="challan-container" id="printChallan">
-                        <p class="challan-placeholder">
-                            Generated challans will appear here. Use the Challan Form section to generate a new challan.
-                        </p>
+                    <div class="challan-container" style="display: flex;justify-content: space-between;gap: 10px;font-family: Arial, sans-serif;font-size: 12px;margin-top: 10px;flex-wrap: nowrap;" id="printChallan">
+                        @if (ViewBag.PrintDTO != null)
+                        {
+                            <div class="challan" style="border: 1px solid #000;padding: 8px;width: 32.8%;box-sizing: border-box;background-color: white;">
+                                <div style="display: flex;align-items:center;justify-content: center;gap: 20px;margin: 6px 0px;">
+                                    <div>
+                                        <img style="width: 100px;" src="~/css/logo.png" alt="logo.png">
+                                    </div>
+                                    <div style="margin-top: 21px;">
+                                        <div class="schoolname" style="text-align: center;font-weight: bold;margin-bottom: 8px;font-family: Cambria, serif;font-size: 15px;" id="schoolname">
+                                            @ViewBag.PrintDTO.SchoolName
+                                        </div>
+                                        <div class="bankinfo" id="bankinfo">@ViewBag.PrintDTO.BankName</div>
+                                        <div class="branchAdress" id="branchAdress">@ViewBag.PrintDTO.BranchLocation</div>
+                                    </div>
+                                </div>
+                                <div class="receipt" style="text-align:center;" id="receipt"><b>Receipt</b> # @ViewBag.PrintDTO.ReceiptNo</div>
+                                <div class="AccountTitle" style="text-align:center;" id="AccountTitle">Account Title: @ViewBag.PrintDTO.AccountTitle</div>
+                                <div class="AccountNumber" style="text-align:center;" id="AccountNumber"><b>A/C #</b> @ViewBag.PrintDTO.AccountNumber</div>
+                                <div class="copy-type" id="copy-type" style="background-color: rgb(83, 83, 83);color: white;text-align: center;font-weight: bold;margin: 0px;text-transform: uppercase;">
+                                    BANK COPY
+                                </div>
+
+                                <div>
+                                    <p><strong style="margin-right: 10px;font-size:15px">Student Name:</strong>@ViewBag.PrintDTO.ApplicantName </p>
+                                    <p><strong style="margin-right: 43px;font-size:15px" ">S/O-D/O:</strong>@ViewBag.PrintDTO.GuardianName </p>
+                                    <p><strong style="margin-right: 45px;font-size:15px" ">Reg No:</strong>@ViewBag.PrintDTO.RegistrationNo </p>
+                                    <p><strong style="margin-right: 55px;font-size:15px" ">Class:</strong>@ViewBag.PrintDTO.ClassName </p>
+                                </div>
+
+                                <table style=" width: 100%;border-collapse: collapse;table-layout: fixed;">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:65%;border:1px solid black;text-align:left">FeeHead</th>
+                                            <th style="width:35%;border:1px solid black;text-align:left">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var fee in @ViewBag.PrintDTO.FeeHeads)
+                                        {
+                                            <tr><td style="width:35%;border:1px solid black;text-align:left">@fee.FeeName</td><td style="width:35%;border:1px solid black;text-align:left">@fee.Amount</td></tr>
+                                        }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr><th style="width:35%;border:1px solid black;text-align:left">Total</th><th style="width:35%;border:1px solid black;text-align:left">@ViewBag.PrintDTO.TotalAmount</th></tr>
+                                    </tfoot>
+                                </table>
+
+                                <br>
+
+                                <table>
+                                    <tbody>
+                                        <tr><td style="font-weight: bold;width:35%;border:1px solid black;text-align:left">Payable before Due Date</td><td style="width:35%;border:1px solid black;text-align:left">@ViewBag.PrintDTO.TotalAmount</td></tr>
+                                        <tr><td style="font-weight: bold;width:35%;border:1px solid black;text-align:left" ">Due Date for Fee Submittion</td><td style="width:35%;border:1px solid black;text-align:left">@ViewBag.PrintDTO.DueDate.ToString("dd-MM-yyyy")</td></tr>
+                                        <tr><td></td></tr>
+                                        <tr><td style="font-weight: bold;width:35%;border:1px solid black;text-align:left" ">Payable after Due Date Upto @ViewBag.PrintDTO.AfterDueDate</td><td style="width:35%;border:1px solid black;text-align:left">@(ViewBag.PrintDTO.TotalAmount + 500)</td></tr>
+                                        <tr><td style="font-weight: bold;width:35%;border:1px solid black;text-align:left" ">Payable with Double Fine Upto @ViewBag.PrintDTO.DoubleFineDate</td><td style="width:35%;border:1px solid black;text-align:left">@(ViewBag.PrintDTO.TotalAmount + 1000)</td></tr>
+                                    </tbody>
+                                </table>
+
+                                <br>
+
+                                <div class="IssueDate" id="IssueDate"><b>Challan Issue Date:</b> @ViewBag.PrintDTO.IssueDate.ToString("dd-MM-yyyy")</div>
+                                <div class="ExpiryDate" id="ExpiryDate"><b>Challan Expiry Date:</b> @ViewBag.PrintDTO.ExpiryDate.ToString("dd-MM-yyyy")</div>
+
+                                <br>
+
+                                <div class="Signature" id="Signature"><b>Admin Officer Signature:</b> __________________</div>
+
+                                <br>
+
+                                <div class="Signature" id="Signature"><b>Note:</b> @ViewBag.PrintDTO.Note</div>
+                            </div>
+
+                            <div class="challan" style="border: 1px solid #000;padding: 8px;width: 32.8%;box-sizing: border-box;background-color: white;">
+                                <div style="display: flex;align-items:center;justify-content: center;gap: 20px;margin: 6px 0px;">
+                                    <div>
+                                        <img style="width: 100px;" src="~/css/logo.png" alt="logo.png">
+                                    </div>
+                                    <div style="margin-top: 21px;">
+                                        <div class="schoolname" style="text-align: center;font-weight: bold;margin-bottom: 8px;font-family: Cambria, serif;font-size: 15px;" id="schoolname">
+                                            @ViewBag.PrintDTO.SchoolName
+                                        </div>
+                                        <div class="bankinfo" id="bankinfo">@ViewBag.PrintDTO.BankName</div>
+                                        <div class="branchAdress" id="branchAdress">@ViewBag.PrintDTO.BranchLocation</div>
+                                    </div>
+                                </div>
+                                <div class="receipt" style="text-align:center;" id="receipt"><b>Receipt</b> # @ViewBag.PrintDTO.ReceiptNo</div>
+                                <div class="AccountTitle" style="text-align:center;" id="AccountTitle">Account Title: @ViewBag.PrintDTO.AccountTitle</div>
+                                <div class="AccountNumber" style="text-align:center;" id="AccountNumber"><b>A/C #</b> @ViewBag.PrintDTO.AccountNumber</div>
+                                <div class="copy-type" id="copy-type" style="background-color: rgb(83, 83, 83);color: white;text-align: center;font-weight: bold;margin: 0px;text-transform: uppercase;">
+                                    SCHOOL COPY
+                                </div>
+
+                                <div>
+                                    <p><strong style="margin-right: 10px;font-size:15px">Student Name:</strong> @ViewBag.PrintDTO.ApplicantName</p>
+                                    <p><strong style="margin-right: 43px;font-size:15px" ">S/O-D/O:</strong> @ViewBag.PrintDTO.GuardianName</p>
+                                    <p><strong style="margin-right: 45px;font-size:15px" ">Reg No:</strong> @ViewBag.PrintDTO.RegistrationNo</p>
+                                    <p><strong style="margin-right: 55px;font-size:15px" ">Class:</strong> @ViewBag.PrintDTO.ClassName</p>
+                                </div>
+
+                                <table style=" width: 100%;border-collapse: collapse;table-layout: fixed;">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:65%;border:1px solid black;text-align:left">Fee Head</th>
+                                            <th style="width:35%;border:1px solid black;text-align:left">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var fee in @ViewBag.PrintDTO.FeeHeads)
+                                        {
+                                            <tr><td style="width:35%;border:1px solid black;text-align:left">@fee.FeeName</td><td style="width:35%;border:1px solid black;text-align:left">@fee.Amount</td></tr>
+                                        }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr><th style="width:35%;border:1px solid black;text-align:left">Total</th><th style="width:35%;border:1px solid black;text-align:left">@ViewBag.PrintDTO.TotalAmount</th></tr>
+                                    </tfoot>
+                                </table>
+
+                                <br>
+
+                                <table>
+                                    <tbody>
+                                        <tr><td style="font-weight: bold;width:35%;border:1px solid black;text-align:left">Payable before Due Date</td><td style="width:35%;border:1px solid black;text-align:left">@ViewBag.PrintDTO.TotalAmount</td></tr>
+                                        <tr><td style="font-weight: bold;width:35%;border:1px solid black;text-align:left" ">Due Date for Fee Submittion</td><td style="width:35%;border:1px solid black;text-align:left">@ViewBag.PrintDTO.DueDate.ToString("dd-MM-yyyy")</td></tr>
+                                        <tr><td></td></tr>
+                                        <tr><td style="font-weight: bold;width:35%;border:1px solid black;text-align:left" ">Payable after Due Date Upto @ViewBag.PrintDTO.AfterDueDate</td><td style="width:35%;border:1px solid black;text-align:left">@(ViewBag.PrintDTO.TotalAmount + 500)</td></tr>
+                                        <tr><td style="font-weight: bold;width:35%;border:1px solid black;text-align:left" ">Payable with Double Fine Upto @ViewBag.PrintDTO.DoubleFineDate</td><td style="width:35%;border:1px solid black;text-align:left">@(ViewBag.PrintDTO.TotalAmount + 1000)</td></tr>
+                                    </tbody>
+                                </table>
+
+                                <br>
+
+                                <div class="IssueDate" id="IssueDate"><b>Challan Issue Date:</b> @ViewBag.PrintDTO.IssueDate.ToString("dd-MM-yyyy")</div>
+                                <div class="ExpiryDate" id="ExpiryDate"><b>Challan Expiry Date:</b> @ViewBag.PrintDTO.ExpiryDate.ToString("dd-MM-yyyy")</div>
+
+                                <br>
+
+                                <div class="Signature" id="Signature"><b>Admin Officer Signature:</b> __________________</div>
+
+                                <br>
+
+                                <div class="Signature" id="Signature"><b>Note:</b> @ViewBag.PrintDTO.Note</div>
+                            </div>
+
+                            <div class="challan" style="border: 1px solid #000;padding: 8px;width: 32.8%;box-sizing: border-box;background-color: white;">
+                                <div style="display: flex;align-items:center;justify-content: center;gap: 20px;margin: 6px 0px;">
+                                    <div>
+                                        <img style="width: 100px;" src="~/css/logo.png" alt="logo.png">
+                                    </div>
+                                    <div style="margin-top: 21px;">
+                                        <div class="schoolname" style="text-align: center;font-weight: bold;margin-bottom: 8px;font-family: Cambria, serif;font-size: 15px;" id="schoolname">
+                                            @ViewBag.PrintDTO.SchoolName
+                                        </div>
+                                        <div class="bankinfo" id="bankinfo">@ViewBag.PrintDTO.BankName</div>
+                                        <div class="branchAdress" id="branchAdress">@ViewBag.PrintDTO.BranchLocation</div>
+                                    </div>
+                                </div>
+                                <div class="receipt" style="text-align:center;" id="receipt"><b>Receipt</b> # @ViewBag.PrintDTO.ReceiptNo</div>
+                                <div class="AccountTitle" style="text-align:center;" id="AccountTitle">Account Title: @ViewBag.PrintDTO.AccountTitle</div>
+                                <div class="AccountNumber" style="text-align:center;" id="AccountNumber"><b>A/C #</b> @ViewBag.PrintDTO.AccountNumber</div>
+                                <div class="copy-type" id="copy-type" style="background-color: rgb(83, 83, 83);color: white;text-align: center;font-weight: bold;margin: 0px;text-transform: uppercase;">
+                                    STUDENT COPY
+                                </div>
+
+                                <div>
+                                    <p><strong style="margin-right: 10px;font-size:15px">Student Name:</strong> @ViewBag.PrintDTO.ApplicantName</p>
+                                    <p><strong style="margin-right: 43px;font-size:15px" ">S/O-D/O:</strong> @ViewBag.PrintDTO.GuardianName</p>
+                                    <p><strong style="margin-right: 45px;font-size:15px" ">Reg No:</strong> @ViewBag.PrintDTO.RegistrationNo</p>
+                                    <p><strong style="margin-right: 55px;font-size:15px" ">Class:</strong> @ViewBag.PrintDTO.ClassName</p>
+                                </div>
+
+                                <table style=" width: 100%;border-collapse: collapse;table-layout: fixed;">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:65%;border:1px solid black;text-align:left">Fee Head</th>
+                                            <th style="width:35%;border:1px solid black;text-align:left">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var fee in @ViewBag.PrintDTO.FeeHeads)
+                                        {
+                                            <tr><td style="width:35%;border:1px solid black;text-align:left">@fee.FeeName</td><td style="width:35%;border:1px solid black;text-align:left">@fee.Amount</td></tr>
+                                        }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr><th style="width:35%;border:1px solid black;text-align:left">Total</th><th style="width:35%;border:1px solid black;text-align:left">@ViewBag.PrintDTO.TotalAmount</th></tr>
+                                    </tfoot>
+                                </table>
+
+                                <br>
+
+                                <table>
+                                    <tbody>
+                                        <tr><td style="font-weight: bold;width:35%;border:1px solid black;text-align:left">Payable before Due Date</td><td style="width:35%;border:1px solid black;text-align:left">@ViewBag.PrintDTO.TotalAmount</td></tr>
+                                        <tr><td style="font-weight: bold;width:35%;border:1px solid black;text-align:left" ">Due Date for Fee Submittion</td><td style="width:35%;border:1px solid black;text-align:left">@ViewBag.PrintDTO.DueDate.ToString("dd-MM-yyyy")</td></tr>
+                                        <tr><td></td></tr>
+                                        <tr><td style="font-weight: bold;width:35%;border:1px solid black;text-align:left" ">Payable after Due Date Upto @ViewBag.PrintDTO.AfterDueDate</td><td style="width:35%;border:1px solid black;text-align:left">@(ViewBag.PrintDTO.TotalAmount + 500)</td></tr>
+                                        <tr><td style="font-weight: bold;width:35%;border:1px solid black;text-align:left" ">Payable with Double Fine Upto @ViewBag.PrintDTO.DoubleFineDate</td><td style="width:35%;border:1px solid black;text-align:left">@(ViewBag.PrintDTO.TotalAmount + 1000)</td></tr>
+                                    </tbody>
+                                </table>
+
+                                <br>
+
+                                <div class="IssueDate" id="IssueDate"><b>Challan Issue Date:</b> @ViewBag.PrintDTO.DueDate.ToString("dd-MM-yyyy")</div>
+                                <div class="ExpiryDate" id="ExpiryDate"><b>Challan Expiry Date:</b> @ViewBag.PrintDTO.DueDate.AddDays(5).ToString("dd-MM-yyyy")</div>
+
+                                <br>
+
+                                <div class="Signature" id="Signature"><b>Admin Officer Signature:</b> __________________</div>
+
+                                <br>
+
+                                <div class="Signature" id="Signature"><b>Note:</b> Enrollment of student is mandatory after fee submission.</div>
+                            </div>
+                        }
+
                     </div>
                     <div class="challan-actions">
                         <button class="app-btn" onclick="window.print()">Print</button>

@@ -1,4 +1,6 @@
-﻿namespace School_Management_System.Areas.Admin.Models
+﻿using Domain.Dto.Admin;
+
+namespace School_Management_System.Areas.Admin.Models
 {
     public class AdminDashboardViewModel
     {
@@ -7,5 +9,6 @@
         public ClassSetupViewModel ClassSetup { get; set; }= new ClassSetupViewModel();
         public FeeSetupViewModel FeeSetup { get; set; }=new FeeSetupViewModel();
         public StaffSetupViewModel StaffSetup { get; set; }=new StaffSetupViewModel();
+        public GeneratedChallanViewModel GeneratedChallan { get; set; }=new GeneratedChallanViewModel();
     }
 }
