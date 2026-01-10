@@ -36,7 +36,7 @@ namespace School_Management_System.Controllers
             {
                 return View(model);
             }
-            bool success = _authService.Register(model.EmailAddress, model.Password);
+            bool success = await _authService.Register(model.EmailAddress, model.Password);
             if (!success)
             {
                 ModelState.AddModelError("EmailAddress", "Username already exists. Please choose another.");
@@ -69,6 +69,7 @@ namespace School_Management_System.Controllers
             }
 
             var result = _authService.Login(model.Email, model.Password);
+           
 
             if (result.Success && result.User != null)
             {
@@ -82,23 +83,59 @@ namespace School_Management_System.Controllers
                 };
 
                 var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.Name, user.Ban_username), // email
-            new Claim("BanId", user.BanId.ToString()),     // user id
-            new Claim("Role", user.BanRole)                // role if needed
-        };
+    {
+        new Claim(ClaimTypes.Name, user.Ban_username),
+        new Claim("BanId", user.BanId.ToString()),
+        new Claim(ClaimTypes.Role, user.BanRole)
+    };
 
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
-                await HttpContext.SignInAsync(
-                    CookieAuthenticationDefaults.AuthenticationScheme,
-                    claimsPrincipal,
-                    authProperties
-                );
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal, authProperties);
 
-                return RedirectToAction("Application", "Applicants", new { area = "Applicants" });
+                // ✅ Redirect based on role
+                if (user.BanRole == "admin")
+                    return RedirectToAction("AdminDashboard", "AdminDashboard", new { area = "Admin" });
+                else if (user.BanRole == "student")
+                    return RedirectToAction("Application", "Applicants", new { area = "Applicants" });
+                else // applicant
+                    return RedirectToAction("Application", "Applicants", new { area = "Applicants" });
             }
+
+            ViewBag.Error = result.Message;
+            return View(model);
+
+
+            //    if (result.Success && result.User != null)
+            //    {
+            //        var user = result.User;
+
+            //        var authProperties = new AuthenticationProperties
+            //        {
+            //            IsPersistent = model.RememberMe,
+            //            ExpiresUtc = model.RememberMe ? DateTime.UtcNow.AddDays(7)
+            //                                          : DateTime.UtcNow.AddMinutes(30)
+            //        };
+
+            //        var claims = new List<Claim>
+            //{
+            //    new Claim(ClaimTypes.Name, user.Ban_username), // email
+            //    new Claim("BanId", user.BanId.ToString()),     // user id
+            //    new Claim(ClaimTypes.Role, user.BanRole)                // role if needed
+            //};
+
+            //        var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            //        var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+
+            //        await HttpContext.SignInAsync(
+            //            CookieAuthenticationDefaults.AuthenticationScheme,
+            //            claimsPrincipal,
+            //            authProperties
+            //        );
+
+            //        return RedirectToAction("Application", "Applicants", new { area = "Applicants" });
+            //    }
 
             ViewBag.Error = result.Message;
             return View(model);

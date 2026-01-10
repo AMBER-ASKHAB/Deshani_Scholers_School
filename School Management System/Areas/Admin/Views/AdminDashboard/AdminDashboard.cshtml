@@ -82,11 +82,17 @@
 
                     <!-- Logout -->
                     <li class="collapsible">
-                        <form class="logout-form" action="/Auth/Logout" method="post">
+                        <form asp-area="Auth" asp-controller="Auth" asp-action="Logout" method="post" style="  background: none;  color: white;">
+                            <a href="#">
+                                <i class="fa-solid fa-right-to-bracket"></i>
+                                <button type="submit" class="btn btn-danger" style="background:none; color:white">Logout</button>
+                            </a>
+                        </form>
+                        @* <form class="logout-form" action="/Auth/Logout" method="post">
                             <button type="submit" class="logout-btn">
                                 <i class="fa-solid fa-right-to-bracket"></i> Logout
                             </button>
-                        </form>
+                        </form> *@
                     </li>
                 </ul>
             </nav>
