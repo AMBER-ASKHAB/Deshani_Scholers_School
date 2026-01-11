@@ -130,7 +130,7 @@ function goToStep(step) {
     setProgress('appProgressBar');
     setProgress('progressBar');
 
-    
+
     // Final step status
     const statusWrap = document.getElementById('applicationStatusWrap');
     if (statusWrap) statusWrap.classList.toggle('hidden', step !== TOTAL_STEPS);
@@ -258,10 +258,8 @@ function setProgress(barId) {
 }
 
 /* --------------- Save each step data (no validation) --------------- */
-var guardianCnicFiles=[];
+var guardianCnicFiles = [];
 async function saveStep(step) {
-
-    /* ---------------- STEP 1 ---------------- */
     if (step === 1) {
         const data = {
             appliedForClassId: parseInt(document.getElementById("apply_class").value)
@@ -276,7 +274,10 @@ async function saveStep(step) {
 
             const result = await res.json();
             if (result.success) {
+                console.log("✅ Step1 saved, applicantId:", result.applicantId);
                 appState.applicantId = result.applicantId;
+                console.log("appstate.applicantId:", appState.applicantId);
+                appState.steps[1].data = data;
                 appState.steps[1].done = true;
                 goToStep(2);
             } else {
@@ -288,12 +289,13 @@ async function saveStep(step) {
         }
         return;
     }
-
-    /* ---------------- STEP 2 ---------------- */
     if (step === 2) {
         const formData = new FormData();
+
+        // Always include ApplicantId (comes from Step 1 response)
         formData.append("ApplicantId", appState.applicantId);
 
+        // Personal info fields
         formData.append("CreateApplicant.FullName", val("p_fullname"));
         formData.append("CreateApplicant.Gender", val("p_gender"));
         formData.append("CreateApplicant.DateOfBirth", val("p_dob"));
@@ -302,15 +304,18 @@ async function saveStep(step) {
         formData.append("CreateApplicant.Email", val("p_email"));
         formData.append("CreateApplicant.BFormNumber", val("p_cnic"));
 
+        // File inputs
         const bFormInput = document.getElementById("fileInput1");
         const profilePicInput = document.getElementById("avatarInput");
 
         if (bFormInput?.files?.length > 0) {
-            formData.append("CreateApplicant.BFormFile", bFormInput.files[0]);
+            formData.append("CreateApplicant.BFormFile", bFormInput.files[0]); // matches model
         }
+
         if (profilePicInput?.files?.length > 0) {
             formData.append("CreateApplicant.ProfilePic", profilePicInput.files[0]);
         }
+        console.log("Submitting ApplicantId:", appState.applicantId);
 
         try {
             const res = await fetch(`/Applicants/SaveStep2`, {
@@ -320,37 +325,38 @@ async function saveStep(step) {
 
             const result = await res.json();
             if (result.success) {
+                console.log("✅ Step 2 saved successfully");
                 appState.steps[2].done = true;
                 goToStep(3);
             } else {
-                alert("❌ Error saving step 2");
+                alert("❌ Error saving step 2: " + (result.message || ""));
             }
         } catch (err) {
             console.error(err);
-            alert("Server error in Step 2");
+            alert(err + " server error in Step 2");
         }
         return;
     }
-
-    /* ---------------- STEP 3 ---------------- */
     if (step === 3) {
         const formData = new FormData();
+        // Always include ApplicantId (from step 1 & 2)
         formData.append("ApplicantId", appState.applicantId);
 
+        // Education info fields (match model names)
         formData.append("ApplicantEducation.Category", val("e_level"));
         formData.append("ApplicantEducation.PrevSchool", val("e_school"));
         formData.append("ApplicantEducation.YearsAttended", val("e_years"));
         formData.append("ApplicantEducation.Grade", val("e_grade"));
         formData.append("ApplicantEducation.Percentage", val("e_percentage"));
 
+        // File input for marksheet
         const marksheetInput = document.getElementById("fileInput2");
-        const certInput = document.getElementById("fileInput3");
-
         if (marksheetInput?.files?.length > 0) {
-            formData.append("ApplicantEducation.PreviousSchoolCertid", marksheetInput.files[0]);
+            formData.append("ApplicantEducation.PreviousSchoolCertid", marksheetInput.files[0]); // must match model property
         }
-        if (certInput?.files?.length > 0) {
-            formData.append("ApplicantEducation.PreviousSchoolLeavCertid", certInput.files[0]);
+        const certInput = document.getElementById("fileInput3");
+        if (marksheetInput?.files?.length > 0) {
+            formData.append("ApplicantEducation.PreviousSchoolLeavCertid", certInput.files[0]); // must match model property
         }
 
         try {
@@ -361,26 +367,25 @@ async function saveStep(step) {
 
             const result = await res.json();
             if (result.success) {
+                console.log("✅ Step 3 saved successfully");
                 appState.steps[3].done = true;
                 goToStep(4);
             } else {
-                alert("❌ Error saving step 3");
+                alert("❌ Error saving step 3: " + (result.message || ""));
             }
         } catch (err) {
             console.error(err);
             alert("Server error in Step 3");
         }
         return;
-    }
-
-    /* ---------------- STEP 4 ---------------- */
-    if (step === 4) {
+    } if (step === 4) {
         const formData = new FormData();
-        formData.append("ApplicantId", appState.applicantId);
 
         let grows = document.querySelectorAll("#guardianTable tbody tr");
+
         grows.forEach((row, i) => {
             let cells = row.querySelectorAll("td");
+
             formData.append(`Guardians[${i}].GuardName`, cells[0].innerText.trim());
             formData.append(`Guardians[${i}].GuardRelation`, cells[1].innerText.trim());
             formData.append(`Guardians[${i}].CNIC`, cells[2].innerText.trim());
@@ -390,11 +395,20 @@ async function saveStep(step) {
             formData.append(`Guardians[${i}].Address`, cells[6].innerText.trim());
             formData.append(`Guardians[${i}].Email`, cells[7].innerText.trim());
 
-            if (guardianCnicFiles[i]?.CnicFront)
+            // CNIC files
+            if (guardianCnicFiles[i]?.CnicFront) {
                 formData.append(`Guardians[${i}].CnicFront`, guardianCnicFiles[i].CnicFront);
-            if (guardianCnicFiles[i]?.CnicBack)
+            }
+            if (guardianCnicFiles[i]?.CnicBack) {
                 formData.append(`Guardians[${i}].CnicBack`, guardianCnicFiles[i].CnicBack);
+            }
         });
+
+        // Siblings
+
+
+        // ApplicantId
+        formData.append("ApplicantId", appState.applicantId);
 
         try {
             const res = await fetch("/Applicants/SaveStep4", {
@@ -404,30 +418,30 @@ async function saveStep(step) {
 
             const result = await res.json();
             if (result.success) {
+                console.log("✅ Step 4 saved successfully");
                 appState.steps[4].done = true;
+                loadSummary(appState.applicantId);
                 goToStep(5);
             } else {
-                alert("❌ Error saving step 4");
+                alert("❌ Error saving step 4: " + (result.message || ""));
             }
         } catch (err) {
             console.error(err);
             alert("Server error in Step 4");
         }
-        return;
     }
-
-    /* ---------------- STEP 5 ---------------- */
     if (step === 5) {
-        const formData = new FormData();
-        formData.append("ApplicantId", appState.applicantId);
-
+        let formData = new FormData();
         let srows = document.querySelectorAll("#siblingsTable tbody tr");
         srows.forEach((row, i) => {
             let cells = row.querySelectorAll("td");
+
             formData.append(`Siblings[${i}].Name`, cells[0].innerText.trim());
             formData.append(`Siblings[${i}].ClassText`, cells[1].innerText.trim());
             formData.append(`Siblings[${i}].BForm`, cells[2].innerText.trim());
         });
+        // ApplicantId
+        formData.append("ApplicantId", appState.applicantId);
 
         try {
             const res = await fetch("/Applicants/SaveStep5", {
@@ -437,38 +451,42 @@ async function saveStep(step) {
 
             const result = await res.json();
             if (result.success) {
+                console.log("✅ Step 5 saved successfully");
                 appState.steps[5].done = true;
+                loadSummary(appState.applicantId);
                 goToStep(6);
             } else {
-                alert("❌ Error saving step 5");
+                alert("❌ Error saving step 5: " + (result.message || ""));
             }
         } catch (err) {
             console.error(err);
             alert("Server error in Step 5");
         }
-        return;
     }
-
-    /* ---------------- STEP 6 (FINAL SUBMIT) ---------------- */
     if (step === 6) {
         try {
             const formData = new FormData();
             formData.append("ApplicantId", appState.applicantId);
+
+            console.log("📤 Submitting ApplicantId (step 6):", appState.applicantId);
 
             const res = await fetch(`/Applicants/SubmitApplication`, {
                 method: "POST",
                 body: formData
             });
 
-            const result = await res.json();
+            if (!res.ok) {
+                throw new Error(`HTTP error! Status: ${res.status}`);
+            }
 
+            const result = await res.json();
             if (result.success) {
                 console.log("✅ Application submitted successfully");
-                // ✅ Redirect to Dashboard after submission
-                console.log("entering into ", result.redirectUrl)
-                window.location.href = result.redirectUrl;
-                console.log("entering into ", result.redirectUrl)
+                alert("✅ Application submitted successfully!");
+                showSection('dashboardSection');
+                window.location.href = '/Applicants/Dashboard'; 
             } else {
+                console.warn("❌ Server rejected:", result.message);
                 alert("❌ Error submitting application: " + (result.message || ""));
             }
 
@@ -478,37 +496,35 @@ async function saveStep(step) {
             alert("Server error during submission. Check console for details.");
         }
     }
-
-
-}
-async function loadSummary(applicantId) {
-    try {
-        const res = await fetch(`/Applicants/ApplicationSummary?applicantId=${applicantId}`);
-        if (res.ok) {
-            const html = await res.text();
-            document.querySelector("#applicationDetails tbody").innerHTML = html;
-        } else {
-            console.error("Error loading summary", res.statusText);
+    async function loadSummary(applicantId) {
+        try {
+            const res = await fetch(`/Applicants/ApplicationSummary?applicantId=${applicantId}`);
+            if (res.ok) {
+                const html = await res.text();
+                document.querySelector("#applicationDetails tbody").innerHTML = html;
+            } else {
+                console.error("Error loading summary", res.statusText);
+            }
+        } catch (err) {
+            console.error("Server error", err);
         }
-    } catch (err) {
-        console.error("Server error", err);
+    }
+
+    // Update progress immediately
+    setProgress('appProgressBar');
+    setProgress('progressBar');
+
+    // Move forward ONLY if there are further steps
+    if (step < TOTAL_STEPS) {
+        maxStepReached = Math.max(maxStepReached, step + 1);
+        goToStep(step + 1);
+    } else {
+        // Stay on summary; re-render pills to reflect all done
+        renderPills('appPills', step);
+        renderPills('progressPills', step);
     }
 }
 
-// Update progress immediately
-setProgress('appProgressBar');
-setProgress('progressBar');
-
-// Move forward ONLY if there are further steps
-if (step < TOTAL_STEPS) {
-    maxStepReached = Math.max(maxStepReached, step + 1);
-    goToStep(step + 1);
-} else {
-    // Stay on summary; re-render pills to reflect all done
-    renderPills('appPills', step);
-    renderPills('progressPills', step);
-}
-}
 function toggleEduFields() {
     const levelEl = document.getElementById("e_level");
     const extraFields = document.getElementById("eduExtraFields");
@@ -571,7 +587,7 @@ async function saveSibling() {
             <button class="btn yellow" onclick="editSibling(this)">Edit</button>
             <button class="btn red" onclick="this.closest('tr').remove()">Delete</button>
           </td>
-        `;             
+        `;
             }
         }
 
@@ -790,7 +806,7 @@ function addGuardianRow() {
         editRow.cells[4].innerText = job;
         editRow.cells[5].innerText = gender;
         editRow.cells[6].innerText = address;
-        editRow.cells[7].innerText = email;                
+        editRow.cells[7].innerText = email;
 
         editRow = null;
         if (saveBtn) saveBtn.innerText = "Save"; // Switch button text back
@@ -812,7 +828,7 @@ function addGuardianRow() {
           <button class="btn yellow" onclick="editGuardianRow(this)">Edit</button>
           <button class="btn red" onclick="this.parentElement.parentElement.remove()">Delete</button>
         </td>
-      `;           
+      `;
         }
     }
 

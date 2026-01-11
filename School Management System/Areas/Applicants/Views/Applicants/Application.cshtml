@@ -54,15 +54,33 @@
                             {
                                 <li><a href="javascript:void(0)" class="text-muted disabled-link">Application Submitted</a></li>
                             }
-                            <li><a href="#" onclick="showSection('viewApplicationSection')">View Application</a></li>
+                            @if (ViewBag.ShowViewApplication)
+                            {
+                                <li><a href="#" onclick="showSection('viewApplicationSection')">View Application</a></li>
+                            }else
+                            {
+                                <li><a href="javascript:void(0)" class="text-muted disabled-link">View Application</a></li>
+                            }
+
                         </ul>
                     </li>
-                    <li>
-                        <a href="#" onclick="showSection('paymentsSection')">
-                            <i class="fas fa-file-invoice-dollar"></i> Fee
-                            Challan
-                        </a>
-                    </li>
+                    
+                    @if (ViewBag.ShowChallanButton)
+                    {
+                        <li>
+
+                            <a href="#" onclick="showSection('paymentsSection')">
+                                <i class="fas fa-file-invoice-dollar"></i> Fee
+                                Challan
+                            </a>
+
+                        </li>
+                    }else
+                    {
+                        <li><a href="javascript:void(0)" class="text-muted disabled-link"><i class="fas fa-file-invoice-dollar"></i>Fee Challan (N/A)  </a></li>
+                    }
+
+                    
                     <li>
                         <a href="#" onclick="showSection('helpSection')"><i class="fas fa-circle-question"></i> Help & Support</a>
                     </li>
@@ -107,8 +125,7 @@
                     @if (ViewBag.Step == 0)
                     {
                         <p class="no-progress">
-                            You haven't started your application yet.
-                            <a href="@Url.Action("Application", "Applicants")">Click here to begin</a>
+                             <p class="small" style="color: black">@ViewBag.NextMessage</p>
                         </p>
                     }
                     else
@@ -137,7 +154,7 @@
                             <div class="progress-bar" style="width:@ViewBag.Progress%"></div>
                         </div>
 
-                        <p class="small">@ViewBag.NextMessage</p>
+                        <p class="small" style="color: black">@ViewBag.NextMessage</p>
 
                         @if (ViewBag.ShowChallanButton)
                         {

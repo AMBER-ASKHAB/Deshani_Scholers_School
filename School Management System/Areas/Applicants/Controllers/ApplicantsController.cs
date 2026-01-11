@@ -31,8 +31,6 @@ namespace School_Management_System.Controllers
             _dbcontext = dbcontext;
             _env = env;
         }
-
-        
       
         [HttpGet]
         public async Task<IActionResult> Dashboard()
@@ -64,6 +62,7 @@ namespace School_Management_System.Controllers
                         step = 1;
                         progress = 25;
                         nextMessage = "Application submitted. Awaiting verification.";
+                        canApply = false;
                         break;
                     case "ChallanGenerated":
                         step = 2;
@@ -93,7 +92,7 @@ namespace School_Management_System.Controllers
             ViewBag.ShowViewApplication = showViewApplication;
             ViewBag.ShowChallanButton = showChallanButton;
 
-            return View();
+            return RedirectToAction("Application");
         }
 
 
