@@ -99,71 +99,168 @@
 
             <!-- DASHBOARD -->
             <section id="dashboardSection" class="page-section active">
-                <div class="card notification-bar">
-                    <h3>Latest Notifications</h3>
-                    <marquee scrollamount="4">
-                        🎉 Welcome to all newly admitted students | 📅 Fee submission deadline: 20th August 2025
-                    </marquee>
+
+                <!-- ADMISSION PROGRESS -->
+                <div class="card">
+                    <h2>Admission Progress</h2>
+
+                    @if (ViewBag.Step == 0)
+                    {
+                        <p class="no-progress">
+                            You haven't started your application yet.
+                            <a href="@Url.Action("Application", "Applicants")">Click here to begin</a>
+                        </p>
+                    }
+                    else
+                    {
+                        <div class="progress-steps">
+
+                            <div class="step-pill @(ViewBag.Step >= 1 ? "done" : "")">
+                                <span class="num">1</span> Application Submitted
+                            </div>
+
+                            <div class="step-pill @(ViewBag.Step == 2 ? "active" : ViewBag.Step > 2 ? "done" : "")">
+                                <span class="num">2</span> Verification
+                            </div>
+
+                            <div class="step-pill @(ViewBag.Step == 3 ? "active" : ViewBag.Step > 3 ? "done" : "")">
+                                <span class="num">3</span> Fee Submission
+                            </div>
+
+                            <div class="step-pill @(ViewBag.Step >= 4 ? "done" : "")">
+                                <span class="num">4</span> Admission Complete
+                            </div>
+
+                        </div>
+
+                        <div class="progress-bar-wrap">
+                            <div class="progress-bar" style="width:@ViewBag.Progress%"></div>
+                        </div>
+
+                        <p class="small">@ViewBag.NextMessage</p>
+
+                        @if (ViewBag.ShowChallanButton)
+                        {
+                            <button class="action-btn" onclick="showSection('paymentsSection')">
+                                Go to Fee / Challan
+                            </button>
+                        }
+                    }
                 </div>
 
+                <!-- NOTIFICATIONS -->
+                <div class="card notification-bar">
+                    <h3>Latest Notifications</h3>
+
+                    @if (ViewBag.Notifications != null && ViewBag.Notifications.Any())
+                    {
+                        <ul class="notification-list">
+                            @foreach (var note in ViewBag.Notifications)
+                            {
+                                <li><span class="icon">📅</span> @note</li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <marquee scrollamount="4">
+                            🎉 Welcome to Deshani Scholars School | 📅 Fee deadline: 20th August
+                        </marquee>
+                    }
+                </div>
+
+                <!-- PROCEDURE -->
                 <div class="procedure-section">
                     <h2>Admission Procedure</h2>
-                    <p style="color: #8b0000;margin-bottom: 16px;">
-                        <b>
-                            To apply, create an application, upload documents, fill in all required info, and submit the challan.
-                            You can then view your admission status, and once admitted, you will be notified via email or the portal.
-                        </b>
-                    </p>
+
                     <div class="procedure-steps">
 
-                        <!-- Step 1 -->
+                        <!-- STEP 1 -->
                         <div class="step-card">
                             <h3>1. Application</h3>
-                            <p>Fill out and complete your application form here.</p>
-                            @if (ViewBag.CanApply)
+                            <p>Fill and submit the admission form.</p>
+
+                            @if (ViewBag.Step >= 1)
                             {
-                                <button class="action-btn" onclick="openCreateApplication()">Create Application</button>
+                                <button class="action-btn" disabled>
+                                    Submitted
+                                </button>
                             }
                             else
                             {
-                                <button class="action-btn" disabled>Application Submitted</button>
+                                <button class="action-btn"
+                                        onclick="showSection('applicationSection')">
+                                    Start Application
+                                </button>
                             }
                         </div>
 
-                        <!-- Step 2 -->
+                        <!-- STEP 2 -->
                         <div class="step-card">
-                            <h3>2. Challan</h3>
-                            <p>Download the challan provided by the admin and pay the fee.</p>
-                            <button class="action-btn" onclick="showSection('paymentsSection')">View Challan</button>
+                            <h3>2. Fee / Challan</h3>
+                            <p>Download challan after verification.</p>
+
+                            @if (ViewBag.ShowChallanButton)
+                            {
+                                <button class="action-btn"
+                                        onclick="showSection('paymentsSection')">
+                                    View Challan
+                                </button>
+                            }
+                            else
+                            {
+                                <button class="action-btn" disabled>
+                                    Not Available
+                                </button>
+                            }
                         </div>
 
-                        <!-- Step 3 -->
+                        <!-- STEP 3 -->
                         <div class="step-card">
-                            <h3>3. Application Status</h3>
-                            <p>View your Application Status</p>
-                            <button class="action-btn" onclick="showSection('viewApplicationSection')">View Application </button>
+                            <h3>3. View Application</h3>
+                            <p>View or download submitted form.</p>
+
+                            @if (ViewBag.ShowViewApplication)
+                            {
+                                <button class="action-btn"
+                                        onclick="showSection('viewApplicationSection')">
+                                    View Form
+                                </button>
+                            }
+                            else
+                            {
+                                <button class="action-btn" disabled>
+                                    Not Available
+                                </button>
+                            }
                         </div>
 
                     </div>
                 </div>
 
+                <!-- ABOUT -->
                 <div class="card">
                     <h2>About Deshani Scholars School</h2>
                     <p>
-                        Deshani Scholars School is committed to providing high-quality education in a nurturing environment,
-                        encouraging students to reach their full potential academically and personally.
+                        Deshani Scholars School is committed to providing high-quality education
+                        in a nurturing environment, encouraging students to reach their full
+                        potential academically and personally.
                     </p>
+
                     <div class="image-section">
-                        <img clas="img1" src="~/css/assets/deshani.jpg" onclick="openLightbox(this.src)"></img>
-                        <img clas="img1" src="~/css/assets/deshani2.jpg" onclick="openLightbox(this.src)"></img>
-                        <img clas="img1" src="~/css/assets/deshani3.jpg" onclick="openLightbox(this.src)"></img>
-                        <img clas="img1" src="~/css/assets/deshani4.jpg" onclick="openLightbox(this.src)"></img>
-                        <img clas="img1" src="~/css/assets/deshani5.jpg" onclick="openLightbox(this.src)"></img>
-                        <img clas="img1" src="~/css/assets/deshani6.jpg" onclick="openLightbox(this.src)"></img>
-                        <img clas="img1" src="~/css/assets/deshani7.jpg" onclick="openLightbox(this.src)"></img>
+                        <img class="img1" src="~/css/assets/deshani.jpg" onclick="openLightbox(this.src)" />
+                        <img class="img1" src="~/css/assets/deshani2.jpg" onclick="openLightbox(this.src)" />
+                        <img class="img1" src="~/css/assets/deshani3.jpg" onclick="openLightbox(this.src)" />
+                        <img class="img1" src="~/css/assets/deshani4.jpg" onclick="openLightbox(this.src)" />
+                        <img class="img1" src="~/css/assets/deshani5.jpg" onclick="openLightbox(this.src)" />
+                        <img class="img1" src="~/css/assets/deshani6.jpg" onclick="openLightbox(this.src)" />
+                        <img class="img1" src="~/css/assets/deshani7.jpg" onclick="openLightbox(this.src)" />
                     </div>
                 </div>
+
             </section>
+
+
             <!-- APPLICATION (Wizard) -->
             <section id="applicationSection" class="page-section">
 
@@ -585,9 +682,20 @@
                           .Select(q => new { q.Title, q.Url })  // Using Url from your table
                                 )
                 ));
+
         //============ for handling input of steps ==========
+                function showSection(sectionId) {
+            document.querySelectorAll('.page-section').forEach(s => {
+                s.classList.remove('active');
+            });
+
+            document.getElementById(sectionId)?.classList.add('active');
+        }
+
     </script>
     <script src="~/js/Applicant.js"></script>
+
+
 </body>
 
 </html>

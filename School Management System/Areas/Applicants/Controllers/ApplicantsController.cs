@@ -31,80 +31,195 @@ namespace School_Management_System.Controllers
             _dbcontext = dbcontext;
             _env = env;
         }
-        private void checkApplication()
-        {
-            string loggedInUserEmail = User.Identity.Name;
-            var existingApp = _dbcontext.Applicants
-                .FirstOrDefault(a => a.emailAddress == loggedInUserEmail);
 
-            if (existingApp != null && existingApp.Status == "Completed")
+        
+      
+        [HttpGet]
+        public async Task<IActionResult> Dashboard()
+        {
+            var email = User.Identity.Name;
+            var user = await _dbcontext.Bandas.AsNoTracking().FirstOrDefaultAsync(b => b.Ban_username == email);
+            if (user == null) return Unauthorized();
+
+            var applicant = await _dbcontext.Applicants
+                .AsNoTracking() // Avoid EF concurrency issues
+                .FirstOrDefaultAsync(a => a.CreatedBy == user.BanId);
+
+            // DEFAULT STATE (NO APPLICATION)
+            int step = 0;
+            int progress = 0;
+            string nextMessage = "Please start your application.";
+            bool showChallanButton = false;
+            bool showViewApplication = false;
+            bool canApply = true;
+
+            if (applicant != null)
             {
-                ViewBag.CanApply = false;
+                canApply = false;
+                showViewApplication = true;
+
+                switch (applicant.Status)
+                {
+                    case "Completed":
+                        step = 1;
+                        progress = 25;
+                        nextMessage = "Application submitted. Awaiting verification.";
+                        break;
+                    case "ChallanGenerated":
+                        step = 2;
+                        progress = 50;
+                        nextMessage = "Verification completed. Please submit fee.";
+                        showChallanButton = true;
+                        break;
+                    case "FeePaid":
+                        step = 3;
+                        progress = 75;
+                        nextMessage = "Fee paid. Admission in process.";
+                        showChallanButton = true;
+                        break;
+                    case "Admitted":
+                        step = 4;
+                        progress = 100;
+                        nextMessage = "Admission completed successfully.";
+                        showChallanButton = true;
+                        break;
+                }
             }
-            else
-            {
-                ViewBag.CanApply = true;
-            }
+
+            ViewBag.Step = step;
+            ViewBag.Progress = progress;
+            ViewBag.NextMessage = nextMessage;
+            ViewBag.CanApply = canApply;
+            ViewBag.ShowViewApplication = showViewApplication;
+            ViewBag.ShowChallanButton = showChallanButton;
+
+            return View();
         }
+
+
+        [HttpGet]
         public async Task<IActionResult> Application()
         {
             var model = new ApplicantViewModel();
-            checkApplication();
-            var categoryDisplayMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+
+            // Get current user
+            var email = User.Identity.Name;
+            var user = await _dbcontext.Bandas.FirstOrDefaultAsync(b => b.Ban_username == email);
+
+            // Default ViewBag
+            ViewBag.Step = 0;
+            ViewBag.Progress = 0;
+            ViewBag.NextMessage = "Please start your application.";
+            ViewBag.CanApply = true;
+            ViewBag.ShowViewApplication = false;
+            ViewBag.ShowChallanButton = false;
+
+            if (user != null)
             {
-                { "preprimary", "Pre Primary" },
-                { "primary", "Primary" },
-                { "middle", "Middle" },
-                { "high", "High" }
-            };
+                var applicant = await _dbcontext.Applicants
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(a => a.CreatedBy == user.BanId);
 
-            var groupedData = await _dbcontext.Classes
-                     .Where(c => c.Active == true)
-                     .GroupBy(c => c.Category)
-                     .Select(g => new ClassCategoryViewModel
-                     {
-                         Category = g.Key,
-                         DisplayCategory = categoryDisplayMap.ContainsKey(g.Key.Trim().ToLower())
-                                           ? categoryDisplayMap[g.Key.Trim().ToLower()]
-                                           : g.Key, // fallback if not mapped
-                         Classes = g.OrderBy(c => c.Id).ToList(),
-                         MinId = (int)g.Min(c => c.Id),
-                         QuickLinksPerClass = new Dictionary<int, List<QuickLink>>()
-                     })
-                     .OrderBy(g => g.MinId)
-                     .ToListAsync();
+                if (applicant != null)
+                {
+                    ViewBag.CanApply = false;
+                    ViewBag.ShowViewApplication = true;
 
+                    switch (applicant.Status)
+                    {
+                        case "Completed":
+                            ViewBag.Step = 1;
+                            ViewBag.Progress = 25;
+                            ViewBag.NextMessage = "Application submitted. Awaiting verification.";
+                            break;
 
-            // Attach quick links for each class
+                        case "ChallanGenerated":
+                            ViewBag.Step = 2;
+                            ViewBag.Progress = 50;
+                            ViewBag.NextMessage = "Verification completed. Please submit fee.";
+                            ViewBag.ShowChallanButton = true;
+                            break;
+
+                        case "FeePaid":
+                            ViewBag.Step = 3;
+                            ViewBag.Progress = 75;
+                            ViewBag.NextMessage = "Fee paid. Admission in process.";
+                            ViewBag.ShowChallanButton = true;
+                            break;
+
+                        case "Admitted":
+                            ViewBag.Step = 4;
+                            ViewBag.Progress = 100;
+                            ViewBag.NextMessage = "Admission completed successfully.";
+                            ViewBag.ShowChallanButton = true;
+                            break;
+                    }
+                }
+            }
+
+            // --- Load Classes safely to avoid EF concurrency issue ---
+            var categoryDisplayMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+    {
+        { "preprimary", "Pre Primary" },
+        { "primary", "Primary" },
+        { "middle", "Middle" },
+        { "high", "High" }
+    };
+
+            var classes = await _dbcontext.Classes
+                .Where(c => c.Active)
+                .AsNoTracking()
+                .ToListAsync();
+
+            var groupedData = classes
+                .GroupBy(c => c.Category)
+                .Select(g => new ClassCategoryViewModel
+                {
+                    Category = g.Key,
+                    DisplayCategory = categoryDisplayMap.ContainsKey(g.Key.Trim().ToLower())
+                                      ? categoryDisplayMap[g.Key.Trim().ToLower()]
+                                      : g.Key,
+                    Classes = g.OrderBy(c => c.Id).ToList(),
+                    MinId = (int)g.Min(c => c.Id),
+                    QuickLinksPerClass = new Dictionary<int, List<QuickLink>>()
+                })
+                .OrderBy(g => g.MinId)
+                .ToList();
+
+            // Attach QuickLinks
             foreach (var category in groupedData)
             {
                 foreach (var cls in category.Classes)
                 {
                     var links = await _dbcontext.QuickLinks
+                        .AsNoTracking()
                         .Where(q => q.ClassId == cls.Id)
                         .ToListAsync();
 
                     category.QuickLinksPerClass[(int)cls.Id] = links;
                 }
             }
-             model.ClassCategoryList = groupedData;
-             var orderMap = new Dictionary<string, int>
-             {  
-              { "preprimary", 1 },
-              { "primary", 2 },
-              { "middle", 3 },
-              { "high", 4 }
-             };
-            ViewBag.EducationTab = _dbcontext.Classes
-                .Select(c => c.Category)  // just fetch category
-                .Distinct()
-                .AsEnumerable()               // switch to LINQ-to-Objects
-                .Select(c => c.Trim().ToLower().Replace(" ", "")) // normalize
+
+            model.ClassCategoryList = groupedData;
+
+            // Order tabs
+            var orderMap = new Dictionary<string, int>
+    {
+        { "preprimary", 1 },
+        { "primary", 2 },
+        { "middle", 3 },
+        { "high", 4 }
+    };
+
+            ViewBag.EducationTab = classes
+                .Select(c => c.Category.Trim().ToLower().Replace(" ", ""))
                 .Distinct()
                 .OrderBy(c => orderMap.ContainsKey(c) ? orderMap[c] : int.MaxValue)
                 .ToList();
+
             return View(model);
         }
+
         [HttpPost]
         public async Task<IActionResult> SaveStep1([FromBody] AppliedClassViewModel model)
         {
@@ -451,39 +566,66 @@ namespace School_Management_System.Controllers
             return PartialView("_ApplicationSummaryPartial", model);
         }
 
+
         [HttpPost]
         public async Task<IActionResult> SubmitApplication([FromForm] ApplicantViewModel model)
         {
-            try
+            if (model.ApplicantId <= 0)
+                return Json(new { success = false, message = "Invalid Applicant" });
+
+            var applicant = await _dbcontext.Applicants.FirstOrDefaultAsync(x => x.Id == model.ApplicantId);
+            if (applicant == null)
+                return Json(new { success = false, message = "Applicant not found" });
+
+            if (applicant.Status != "ReadyForSubmission")
+                return Json(new { success = false, message = "Complete all steps first" });
+
+            applicant.Status = "Completed";
+            applicant.ApplicationDate = DateTime.Now;
+
+            _dbcontext.Update(applicant);
+            await _dbcontext.SaveChangesAsync();
+
+            // ✅ Return JSON with redirect to Dashboard
+            return Json(new
             {
-              
-                long applicantId = model.ApplicantId;
-                if (applicantId <= 0)
-                {
-                    return Json(new { success = false, message = "ApplicantId is missing" });
-                }
-
-                var applicant = await _dbcontext.Applicants.FirstOrDefaultAsync(x => x.Id == applicantId);
-                if (applicant == null)
-                {
-                    return Json(new { success = false, message = "Applicant not found" });
-                }
-                if (applicant.Status != "ReadyForSubmission")
-                    return Json(new { success = false, message = "All steps must be completed before submission." });
-
-                applicant.Status = "Completed";
-                applicant.ApplicationDate = DateTime.Now;
-
-                _dbcontext.Update(applicant);
-                await _dbcontext.SaveChangesAsync();
-
-                return Json(new { success = true, applicantId });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = "Server error: " + ex.Message });
-            }
+                success = true,
+                redirectUrl = Url.Action("Application", "Applicants")
+            });
         }
+
+        //public async Task<IActionResult> SubmitApplication([FromForm] ApplicantViewModel model)
+        //{
+        //    try
+        //    {
+
+        //        long applicantId = model.ApplicantId;
+        //        if (applicantId <= 0)
+        //        {
+        //            return Json(new { success = false, message = "ApplicantId is missing" });
+        //        }
+
+        //        var applicant = await _dbcontext.Applicants.FirstOrDefaultAsync(x => x.Id == applicantId);
+        //        if (applicant == null)
+        //        {
+        //            return Json(new { success = false, message = "Applicant not found" });
+        //        }
+        //        if (applicant.Status != "ReadyForSubmission")
+        //            return Json(new { success = false, message = "All steps must be completed before submission." });
+
+        //        applicant.Status = "Completed";
+        //        applicant.ApplicationDate = DateTime.Now;
+
+        //        _dbcontext.Update(applicant);
+        //        await _dbcontext.SaveChangesAsync();
+
+        //        return Json(new { success = true, applicantId });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return Json(new { success = false, message = "Server error: " + ex.Message });
+        //    }
+        //}
 
         private string AFileName(long ApplicantID,int schoolID,string format)
         {
