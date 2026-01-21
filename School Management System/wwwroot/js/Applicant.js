@@ -102,7 +102,9 @@ function countDoneSteps() {
 function goToStep(step) {
     if (step < 1 || step > TOTAL_STEPS) return;
     currentStep = step;
-    maxStepReached = Math.max(maxStepReached, step);
+    if (maxStepReached < 6) {
+        maxStepReached = Math.max(maxStepReached, step);
+    }
     // Show application section
     showSection('applicationSection');
 
@@ -259,6 +261,7 @@ function setProgress(barId) {
 
 /* --------------- Save each step data (no validation) --------------- */
 var guardianCnicFiles = [];
+debugger;
 async function saveStep(step) {
     if (step === 1) {
         const data = {
@@ -369,7 +372,7 @@ async function saveStep(step) {
             if (result.success) {
                 console.log("✅ Step 3 saved successfully");
                 appState.steps[3].done = true;
-                goToStep(4);
+                 goToStep(4);
             } else {
                 alert("❌ Error saving step 3: " + (result.message || ""));
             }
@@ -483,8 +486,8 @@ async function saveStep(step) {
             if (result.success) {
                 console.log("✅ Application submitted successfully");
                 alert("✅ Application submitted successfully!");
-                showSection('dashboardSection');
-                window.location.href = '/Applicants/Dashboard'; 
+                showSection('paymentsSection');
+                window.location.href = '/Applicants/Dashboard';
             } else {
                 console.warn("❌ Server rejected:", result.message);
                 alert("❌ Error submitting application: " + (result.message || ""));

@@ -61,19 +61,19 @@ namespace School_Management_System.Controllers
                     case "Completed":
                         step = 1;
                         progress = 25;
-                        nextMessage = "Application submitted. Awaiting verification.";
+                        nextMessage = "Application submitted. Please proceed to payment.";
                         canApply = false;
                         break;
-                    case "ChallanGenerated":
+                    case "FeePaid":
                         step = 2;
                         progress = 50;
-                        nextMessage = "Verification completed. Please submit fee.";
+                        nextMessage = "Fee paid.Awaiting for verification.";
                         showChallanButton = true;
                         break;
-                    case "FeePaid":
+                    case "Verified":
                         step = 3;
-                        progress = 75;
-                        nextMessage = "Fee paid. Admission in process.";
+                        progress = 70;
+                        nextMessage = " Verifcation Complete.";
                         showChallanButton = true;
                         break;
                     case "Admitted":
@@ -132,17 +132,16 @@ namespace School_Management_System.Controllers
                             ViewBag.NextMessage = "Application submitted. Awaiting verification.";
                             break;
 
-                        case "ChallanGenerated":
+                        case "FeePaid":
                             ViewBag.Step = 2;
                             ViewBag.Progress = 50;
-                            ViewBag.NextMessage = "Verification completed. Please submit fee.";
+                            ViewBag.NextMessage = "Fee paid.Awaiting for verification.";
                             ViewBag.ShowChallanButton = true;
                             break;
-
-                        case "FeePaid":
+                        case "Verified":
                             ViewBag.Step = 3;
                             ViewBag.Progress = 75;
-                            ViewBag.NextMessage = "Fee paid. Admission in process.";
+                            ViewBag.NextMessage = " Verifcation Complete.";
                             ViewBag.ShowChallanButton = true;
                             break;
 
@@ -285,7 +284,7 @@ namespace School_Management_System.Controllers
                     using (var stream = new FileStream(filePath, FileMode.Create))
                         await model.CreateApplicant.BFormFile.CopyToAsync(stream);
 
-                    applicant.BFormFilePath = "/uploads/" + fileName;
+                    //applicant.BFormFilePath = "/uploads/" + fileName;
                 }
 
 
@@ -301,7 +300,7 @@ namespace School_Management_System.Controllers
                     using (var stream = new FileStream(filePath, FileMode.Create))
                         await model.CreateApplicant.ProfilePic.CopyToAsync(stream);
 
-                    applicant.ProfilePicFilePath = "/uploads/" + fileName;
+                    //applicant.ProfilePicFilePath = "/uploads/" + fileName;
                 }
 
                 _dbcontext.Applicants.Update(applicant);
@@ -380,7 +379,7 @@ namespace School_Management_System.Controllers
                         using (var stream = new FileStream(filePath, FileMode.Create))
                             await model.ApplicantEducation.PreviousSchoolCertid.CopyToAsync(stream);
 
-                        applicant.PreviousSchoolCertFilePath = "/uploads/" + fileName;
+                        //applicant.PreviousSchoolCertFilePath = "/uploads/" + fileName;
                     }
                     if (model.ApplicantEducation.PreviousSchoolLeavCertid != null)
                     {
@@ -394,7 +393,7 @@ namespace School_Management_System.Controllers
                         using (var stream = new FileStream(filePath, FileMode.Create))
                             await model.ApplicantEducation.PreviousSchoolLeavCertid.CopyToAsync(stream);
 
-                        applicant.PreviousSchoolLeavCertFilePath = "/uploads/" + fileName;
+                        //applicant.PreviousSchoolLeavCertFilePath = "/uploads/" + fileName;
                     }
 
                     _dbcontext.Applicants.Update(applicant);
@@ -589,42 +588,10 @@ namespace School_Management_System.Controllers
             return Json(new
             {
                 success = true,
-                redirectUrl = Url.Action("Application", "Applicants")
+                redirectUrl = Url.Action("Application", "Dashboard")
             });
         }
 
-        //public async Task<IActionResult> SubmitApplication([FromForm] ApplicantViewModel model)
-        //{
-        //    try
-        //    {
-
-        //        long applicantId = model.ApplicantId;
-        //        if (applicantId <= 0)
-        //        {
-        //            return Json(new { success = false, message = "ApplicantId is missing" });
-        //        }
-
-        //        var applicant = await _dbcontext.Applicants.FirstOrDefaultAsync(x => x.Id == applicantId);
-        //        if (applicant == null)
-        //        {
-        //            return Json(new { success = false, message = "Applicant not found" });
-        //        }
-        //        if (applicant.Status != "ReadyForSubmission")
-        //            return Json(new { success = false, message = "All steps must be completed before submission." });
-
-        //        applicant.Status = "Completed";
-        //        applicant.ApplicationDate = DateTime.Now;
-
-        //        _dbcontext.Update(applicant);
-        //        await _dbcontext.SaveChangesAsync();
-
-        //        return Json(new { success = true, applicantId });
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return Json(new { success = false, message = "Server error: " + ex.Message });
-        //    }
-        //}
 
         private string AFileName(long ApplicantID,int schoolID,string format)
         {
@@ -658,7 +625,7 @@ namespace School_Management_System.Controllers
             {
                 ApplicantId = applicant.Id,
                 CreateApplicant = new CreateApplicantViewModel { FullName = applicant.FullName, status = applicant.Status,
-                    ProfilePicFilePath = applicant.ProfilePicFilePath, Gender=applicant.Gender, DateOfBirth=applicant.DateOfBirth,
+                    /*ProfilePicFilePath = applicant.ProfilePicFilePath,*/ Gender=applicant.Gender, DateOfBirth=applicant.DateOfBirth,
                      MotherTongue=applicant.MotherTongue, BFormNumber=applicant.BFormNumber,Contact=applicant.contact},
                 AppliedClass = new AppliedClassViewModel { classDesc = fetchClass(applicant.AppliedForClassId) },
                 Guardians = GetGuardiansByApplicantId(applicant.Id),

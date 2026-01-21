@@ -37,13 +37,6 @@ namespace Domain.Entities.Application
         [Column("app_BFORM_number")]
         public string? BFormNumber { get; set; }
 
-        [Column("app_BFORM_file")]
-        public string? BFormFilePath { get; set; }
-
-        // ✅ Profile picture
-        [Column("app_picturefilename")]
-        public string? ProfilePicFilePath { get; set; }
-
         // ✅ Previous school details (inline, not FK)
         [Column("app_prevschool_category")]
         public int classCategory { get; set; }
@@ -60,11 +53,6 @@ namespace Domain.Entities.Application
         [Column("app_prevschool_percentage")]
         public float? Percentage { get; set; }
 
-        [Column("app_prevschool_certfile")]
-        public string? PreviousSchoolCertFilePath { get; set; }
-        [Column("app_prevschoolleaving_certfile")]
-        public string? PreviousSchoolLeavCertFilePath { get; set; }
-
         [Column("app_date")]
         public DateTime ApplicationDate { get; set; } = DateTime.UtcNow;
 
@@ -77,13 +65,13 @@ namespace Domain.Entities.Application
         [Column("app_approvedby")]
         public long? ApprovedBy { get; set; }
         [Column("app_contactNo")]
-        public string contact { get; set; }= "";
+        public string contact { get; set; } = "";
         [Column("app_Email")]
         public string emailAddress { get; set; } = "";
 
         [Column("app_approvedon")]
         public DateTime? ApprovedOn { get; set; }
         public ICollection<ApplicantGuardian> Guardians { get; set; }
-        public ICollection<ApplicantSibling> Siblings{ get; set; }
+        public ICollection<ApplicantSibling> Siblings { get; set; }
     }
 }

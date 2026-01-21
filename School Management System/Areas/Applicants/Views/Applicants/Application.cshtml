@@ -46,15 +46,17 @@
                             <i class="fas fa-chevron-down arrow"></i>
                         </a>
                         <ul class="expandable-content">
-                            @if (ViewBag.CanApply)
+                            @if (ViewBag.Step >= 1)
                             {
-                                <li><a href="#" onclick="openCreateApplication()">Create Application</a></li>
+                                <li><a href="javascript:void(0)" class="text-muted disabled-link">Application Submitted</a></li>
+                              //  <li><a href="#" onclick="openCreateApplication()">Create Application</a></li>
                             }
                             else
                             {
-                                <li><a href="javascript:void(0)" class="text-muted disabled-link">Application Submitted</a></li>
+                                <li><a href="#" onclick="openCreateApplication()">Create Application</a></li>
+                                //<li><a href="javascript:void(0)" class="text-muted disabled-link">Application Submitted</a></li>
                             }
-                            @if (ViewBag.ShowViewApplication)
+                            @if (ViewBag.Step >= 1)
                             {
                                 <li><a href="#" onclick="showSection('viewApplicationSection')">View Application</a></li>
                             }else
@@ -65,8 +67,8 @@
                         </ul>
                     </li>
                     
-                    @if (ViewBag.ShowChallanButton)
-                    {
+@*                     @if (ViewBag.ShowChallanButton)
+                    { *@
                         <li>
 
                             <a href="#" onclick="showSection('paymentsSection')">
@@ -75,31 +77,22 @@
                             </a>
 
                         </li>
-                    }else
+@*                     }else
                     {
                         <li><a href="javascript:void(0)" class="text-muted disabled-link"><i class="fas fa-file-invoice-dollar"></i>Fee Challan (N/A)  </a></li>
-                    }
+                    } *@
 
                     
                     <li>
                         <a href="#" onclick="showSection('helpSection')"><i class="fas fa-circle-question"></i> Help & Support</a>
                     </li>
-                    <li class="expandable">
-                        <a href="#" class="main-link" onclick="toggleExpand(this)">
-                            <i class="fa-solid fa-user"></i> Account<i class="fas fa-chevron-down arrow"></i>
+                    <li>
+                        <a href="#" onclick="showSection('changePasswordSection')">
+                            <i class="fa fa-key"></i> Change Password
                         </a>
-                        <ul class="expandable-content">
-                            @if (ViewBag.CanApply)
-                            {
-                                <li><a href="#" onclick="showSection('applicationSection')">Edit Profile</a></li>
-                            }
-                            else
-                            {
-                                <li><a href="javascript:void(0)" class="text-muted disabled-link">Application Submitted</a></li>
-                            }
-                            <li><a href="#" onclick="showSection('changePasswordSection')">Change Password</a></li>
-                        </ul>
                     </li>
+
+
                     <li>
                         <form asp-area="Auth" asp-controller="Auth" asp-action="Logout" method="post" style="  background: none;  color: white;">
                         <a href="#">
@@ -135,14 +128,15 @@
                             <div class="step-pill @(ViewBag.Step >= 1 ? "done" : "")">
                                 <span class="num">1</span> Application Submitted
                             </div>
-
                             <div class="step-pill @(ViewBag.Step == 2 ? "active" : ViewBag.Step > 2 ? "done" : "")">
-                                <span class="num">2</span> Verification
+                                <span class="num">2</span> Fee Submission
                             </div>
 
                             <div class="step-pill @(ViewBag.Step == 3 ? "active" : ViewBag.Step > 3 ? "done" : "")">
-                                <span class="num">3</span> Fee Submission
+                                <span class="num">3</span> Verification
                             </div>
+
+
 
                             <div class="step-pill @(ViewBag.Step >= 4 ? "done" : "")">
                                 <span class="num">4</span> Admission Complete
@@ -186,74 +180,74 @@
                     }
                 </div>
 
-                <!-- PROCEDURE -->
-                <div class="procedure-section">
-                    <h2>Admission Procedure</h2>
+              <!-- PROCEDURE -->
+<div class="procedure-section">
+    <h2>Admission Procedure</h2>
 
-                    <div class="procedure-steps">
+    <div class="procedure-steps">
 
-                        <!-- STEP 1 -->
-                        <div class="step-card">
-                            <h3>1. Application</h3>
-                            <p>Fill and submit the admission form.</p>
+        <!-- STEP 1 : Application -->
+        <div class="step-card">
+            <h3>1. Application</h3>
+            <p>Fill and submit the admission form.</p>
 
-                            @if (ViewBag.Step >= 1)
-                            {
-                                <button class="action-btn" disabled>
-                                    Submitted
-                                </button>
-                            }
-                            else
-                            {
-                                <button class="action-btn"
-                                        onclick="showSection('applicationSection')">
-                                    Start Application
-                                </button>
-                            }
-                        </div>
+            @if (ViewBag.Step >= 1)
+            {
+                <button class="action-btn" disabled>
+                    Submitted
+                </button>
+            }
+            else
+            {
+                <button class="action-btn"
+                        onclick="showSection('applicationSection')">
+                    Start Application
+                </button>
+            }
+        </div>
 
-                        <!-- STEP 2 -->
-                        <div class="step-card">
-                            <h3>2. Fee / Challan</h3>
-                            <p>Download challan after verification.</p>
+        <!-- STEP 2 : View Application -->
+        <div class="step-card">
+            <h3>2. View Application</h3>
+            <p>View or download submitted form.</p>
 
-                            @if (ViewBag.ShowChallanButton)
-                            {
-                                <button class="action-btn"
-                                        onclick="showSection('paymentsSection')">
-                                    View Challan
-                                </button>
-                            }
-                            else
-                            {
-                                <button class="action-btn" disabled>
-                                    Not Available
-                                </button>
-                            }
-                        </div>
+            @if (ViewBag.Step >= 1)
+            {
+                <button class="action-btn"
+                        onclick="showSection('viewApplicationSection')">
+                    View Form
+                </button>
+            }
+            else
+            {
+                <button class="action-btn" disabled>
+                    Not Available
+                </button>
+            }
+        </div>
 
-                        <!-- STEP 3 -->
-                        <div class="step-card">
-                            <h3>3. View Application</h3>
-                            <p>View or download submitted form.</p>
+        <!-- STEP 3 : Student Portal -->
+        <div class="step-card">
+            <h3>3. Student Portal</h3>
+            <p>Access student portal after verification.</p>
 
-                            @if (ViewBag.ShowViewApplication)
-                            {
-                                <button class="action-btn"
-                                        onclick="showSection('viewApplicationSection')">
-                                    View Form
-                                </button>
-                            }
-                            else
-                            {
-                                <button class="action-btn" disabled>
-                                    Not Available
-                                </button>
-                            }
-                        </div>
+            @if (ViewBag.Step >= 2) 
+            {
+                <a href="/StudentPortal/Dashboard" class="action-btn">
+                    Go to Student Portal
+                </a>
+            }
+            else
+            {
+                <button class="action-btn" disabled>
+                    Closed
+                </button>
+            }
+        </div>
 
-                    </div>
-                </div>
+    </div>
+</div>
+
 
                 <!-- ABOUT -->
                 <div class="card">
@@ -620,6 +614,10 @@
                     </div>
 
                     <div class="buttons d-flex justify-content-end mt-3" style="gap: 14px;margin-top: 40px;margin-left: 1060px; display: flex;margin-bottom: 32px;}">
+                        <button type="button" class="btn primary" onclick="goToStep(1)">
+                            <i class="fa-solid fa-eye"></i> Review Application
+                        </button>
+
                         <!-- Submit Application Button -->
                         <button type="button" class="btn primary" onclick="saveStep(6)">
                             <i class="bi bi-check-circle"></i> Submit Application
@@ -635,8 +633,6 @@
             <div id="changePasswordSection" class="page-section" style="display:none;">
                 @await Html.PartialAsync("_ChangePassword", new ResetPasswordViewModel())
             </div>
-
-
             <!-- Notices -->
             <section id="messagesSection" class="page-section">
                 <div class="card">
@@ -647,9 +643,19 @@
             <!-- Payments -->
             <section id="paymentsSection" class="page-section">
                 <div class="card">
-                    <h2>Payment History</h2>
-                    <p>You have no payments on record yet.</p>
-                    <button class="generate-challan-btn btn primary">Generate Challan</button>
+
+
+                    @if (ViewBag.Step >= 1)
+                    {
+                        @await Html.PartialAsync("_ApplicantChallan", Model)
+                    }
+                    else
+                    {
+                        <h2>Payment History</h2>
+                        <p>You have no payments on record yet.</p>
+                    }
+                   
+                 
                 </div>
             </section>
             <!-- Help -->
@@ -661,16 +667,16 @@
             </section>
 
             <section id="viewApplicationSection" class="page-section" style="display:none;">
-                <div class="card shadow-lg rounded p-4" style="    height: 1250px;">
+                <div class="card shadow-lg rounded p-4" style="height: 1250px;">
                     <h2 class="mb-3">View Application</h2>
                     <hr />
-
                     <!-- Application content loads here -->
                     <div id="applicationContent" aria-live="polite">
                         <p>Loading application...</p>
                     </div>
                 </div>
             </section>
+
             <!-- WhatsApp Floating Button -->
             <a href="https://wa.me/923179369176" class="whatsapp-float" target="_blank" title="Chat with us on WhatsApp">
                 <i class="fab fa-whatsapp"></i>

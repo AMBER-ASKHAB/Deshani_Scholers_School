@@ -1,73 +1,299 @@
 ﻿@using School_Management_System.Areas.Applicants.Models
 @model ApplicantViewModel
+
 @{
     Layout = "_ApplicantLayout";
 }
 
 <style>
-    .cardcardone {
-        width: 816px;
-        margin-left: 279px;
-        margin-top: 40px;
-        background: whitesmoke;
-        height: 894px;
-        display: none;
+    *{
+        font-family: "Poppins", Arial, sans-serif;
     }
-    /* Section Button */
-    .section-btn {
-        padding: 12px 28px;
-        border: 2px solid #8B0000; /* Dark red border */
-        background-color: #ffffff; /* White background */
-        color: #8B0000; /* Dark red text */
-        border-radius: 30px; /* Smooth rounded edges */
-        font-size: 16px;
-        font-weight: bold;
+    /* ===== LAYOUT ===== */
+    .application-container {
+        display: grid;
+        grid-template-columns: 55% 43%;
+        gap: 25px;
+        margin-top: 25px;
+        font-family: "Poppins", Arial, sans-serif;
+    }
+
+    .application-left,
+    .application-right {
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 20px;
+        border: 1px solid #e5e5e5;
+    }
+
+    /* ===== TOP ACTION BAR ===== */
+    .top-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-bottom: 15px;
+        margin-right: 27px;
+    }
+
+    .btn-soft {
+        background: #8B0000;
+        color: #ffffff;
+        border: 1px solid #8B0000;
+        padding: 7px 18px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
         cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* subtle shadow */
-        margin-left:1073px;
+        transition: background 0.25s ease, color 0.25s ease;
     }
 
-        /* Hover effect */
-        .section-btn:hover {
-            background-color: #8B0000; /* Fill with red */
-            color: #ffffff; /* White text */
-            transform: scale(1.05); /* Slight zoom */
-            box-shadow: 0 6px 10px rgba(0,0,0,0.2);
+        .btn-soft:hover {
+            background: #f3eaea;
+            color: #8B0000;
         }
 
-        /* Active/Clicked effect */
-        .section-btn:active {
-            transform: scale(0.97); /* Slight press */
-            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+    /* ===== STATUS UI ===== */
+    .status-title {
+        font-weight: 900; /* stronger bold */
+        font-size: 17px; /* slightly larger */
+        letter-spacing: 0.4px;
+        margin-bottom: 20px;
+        color: #222;
+    }
+
+    .doc-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .doc-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 14px;
+        border: 1px solid #e6e6e6;
+        border-radius: 6px;
+        background: #fafafa;
+    }
+
+    .doc-name {
+        flex: 1;
+        font-size: 14px;
+        color: #333;
+    }
+
+    .doc-status {
+        padding: 5px 12px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .approved {
+        background: #eef5f0;
+        color: #2f6f44;
+    }
+
+    .rejected {
+        background: #f7eeee;
+        color: #8b2c2c;
+    }
+
+    .pending {
+        background: #f0f0f0;
+        color: #666;
+    }
+
+    .doc-right {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 6px;
+    }
+
+    .doc-action {
+        display: flex;
+        gap: 8px;
+    }
+/* 
+    .reupload-btn {
+        background: #f5f5f5;
+        border: 1px solid #ccc;
+        padding: 5px 12px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+    } */
+
+    .reupload-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        border: 1px dashed #c62828;
+        color: #c62828;
+        background: #fff;
+        transition: all 0.25s ease;
+    }
+
+        .reupload-btn:hover {
+            background: #fdecea;
+            border-color: #8b0000;
+            color: #8b0000;
         }
 
+
+    /* ===== FINAL STATUS ===== */
+    .final-status {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+        padding-top: 12px;
+        border-top: 1px solid #ddd;
+        font-size: 14px;
+        font-weight: 600;
+        color: #555;
+    }
+
+    /* ===== PRINT ===== */
+    @@media print {
+        body * {
+            visibility: hidden;
+        }
+
+        #printSection,
+        #printSection * {
+            visibility: visible;
+        }
+
+        #printSection {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+        }
+
+        .top-actions {
+            display: none;
+        }
+    }
 </style>
+
 @if (Model == null || Model.ApplicantId == 0)
 {
     <div class="alert alert-warning text-center mt-4">
         No application found to view.
     </div>
-}else
-{
-    <!-- Summary Table -->
-    <h4 class="mb-3">Application Dashboard</h4>
-    <div class="table-responsive mb-4">
-        @await Html.PartialAsync("_dashboardview", Model)
-    </div>
-    <br />
-    <!-- Read-only Application -->
-    <!-- Button to show form -->
-    <button class="section-btn" id="viewFormBtn" >View Submitted Application Form</button>
-
-    <!-- Hidden container for the form -->
-    <div id="submittedForm" class="cardcardone" >
-        <br />
-        @await Html.PartialAsync("_ApplicationReadOnly", Model)
-    </div>
-
-
 }
+else
+{
+    <h4 class="mb-3">Application Dashboard</h4>
+
+    <div class="table-responsive mb-4">
+        <table class="table table-bordered table-striped">
+            <thead class="table-light">
+                <tr>
+                    <th>Applicant ID</th>
+                    <th>Name</th>
+                    <th>Applied For Class</th>
+                    <th>Application Date </th>
+                    <th>Status</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>@Model.ApplicantId</td>
+                    <td>@Model.CreateApplicant.FullName</td>
+                    <td>@Model.AppliedClass.classDesc</td>
+                    <td></td>
+                    <td>@Model.CreateApplicant.status</td>
+                   
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="application-container">
+
+        <!-- LEFT : APPLICATION FORM -->
+        <div class="application-left">
+
+            <div id="printSection">
+                @await Html.PartialAsync("_ApplicationReadOnly", Model)
+            </div>
+            <div class="top-actions">
+                <button class="btn-soft" onclick="window.print()">🖨 Print</button>
+                <button type="button"
+                        id="downloadBtn"
+                        class="btn-soft"
+                        style="margin-right: 32px;">
+                    ⬇ Download
+                </button>
+
+            </div>
 
 
+
+        </div>
+
+        <!-- RIGHT : APPLICATION STATUS -->
+        <div class="application-right" style="height: 501px;">
+
+            <h5 class="status-title" style="  font-family: " Poppins", Arial, sans-serif;">Application Status</h5>
+
+            <div class="doc-list">
+
+                <div class="doc-item">
+                    <span class="doc-name">Admission Form</span>
+                    <span class="doc-status approved">Approved</span>
+                </div>
+
+                <div class="doc-item">
+                    <span class="doc-name">B-Form</span>
+                    <span class="doc-status approved">Approved</span>
+                </div>
+
+                <div class="doc-item">
+                    <span class="doc-name">School Leaving Certificate</span>
+
+                    <div class="doc-right">
+                        <span class="doc-status rejected">Rejected</span>
+
+                        <label class="reupload-btn">
+                            ⬆ Reupload
+                            <input type="file" hidden />
+                        </label>
+                    </div>
+                </div>
+
+
+                <div class="doc-item">
+                    <span class="doc-name">Guardian CNIC (Front)</span>
+                    <span class="doc-status approved">Approved</span>
+                </div>
+
+                <div class="doc-item">
+                    <span class="doc-name">Guardian CNIC (Back)</span>
+                    <span class="doc-status pending">Pending</span>
+                </div>
+
+            </div>
+
+            <div class="final-status">
+                <span>Final Application Status</span>
+                <span>In Progress</span>
+            </div>
+
+        </div>
+
+    </div>
+}
 

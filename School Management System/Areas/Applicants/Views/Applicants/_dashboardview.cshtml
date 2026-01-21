@@ -1,20 +1,114 @@
 ﻿@using School_Management_System.Areas.Applicants.Models
 @model ApplicantViewModel
-<table class="table table-bordered table-striped">
-    <thead class="table-light">
-        <tr>
-            <th>Applicant ID</th>
-            <th>Name</th>
-            <th>Status</th>
-            <th>Applied For Class</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>@Model.ApplicantId</td>
-            <td>@Model.CreateApplicant.FullName</td>
-            <td>@Model.CreateApplicant.status</td>
-            <td>@Model.AppliedClass.classDesc</td>
-        </tr>
-    </tbody>
-</table>
+<style>
+    .app-summary {
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .summary-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+        .summary-header h4 {
+            margin: 0;
+            font-weight: 700;
+        }
+
+    .muted {
+        font-size: 13px;
+        color: #777;
+    }
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+    }
+
+    .summary-item {
+        background: #fafafa;
+        padding: 12px 14px;
+        border-radius: 6px;
+        border: 1px solid #eee;
+    }
+
+        .summary-item .label {
+            font-size: 12px;
+            color: #777;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .summary-item .value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #222;
+        }
+
+    /* STATUS BADGES */
+    .status-badge {
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+        .status-badge.in-progress {
+            background: #fff4e5;
+            color: #ef6c00;
+        }
+
+        .status-badge.approved {
+            background: #e6f4ea;
+            color: #2e7d32;
+        }
+
+        .status-badge.rejected {
+            background: #fdecea;
+            color: #c62828;
+        }
+
+</style>
+<div class="card app-summary">
+
+    <div class="summary-header">
+        <div>
+            <h4>Application Overview</h4>
+            <p class="muted">Review your submitted application details</p>
+        </div>
+
+        <span class="status-badge in-progress">
+            @Model.CreateApplicant.status
+        </span>
+    </div>
+
+    <div class="summary-grid">
+
+        <div class="summary-item">
+            <span class="label">Applicant ID</span>
+            <span class="value">@Model.ApplicantId</span>
+        </div>
+
+        <div class="summary-item">
+            <span class="label">Student Name</span>
+            <span class="value">@Model.CreateApplicant.FullName</span>
+        </div>
+
+        <div class="summary-item">
+            <span class="label">Applied Class</span>
+            <span class="value">@Model.AppliedClass.classDesc</span>
+        </div>
+
+        <div class="summary-item">
+            <span class="label">Application Status</span>
+            <span class="value">@Model.CreateApplicant.status</span>
+        </div>
+
+    </div>
+
+</div>
