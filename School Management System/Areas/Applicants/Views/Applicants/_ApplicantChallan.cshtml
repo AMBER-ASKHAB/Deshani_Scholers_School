@@ -1,0 +1,294 @@
+﻿@using School_Management_System.Areas.Applicants.Models
+@model ApplicantViewModel
+
+<style>
+    /* ===== PAGE LAYOUT ===== */
+    .challan-section {
+        margin-top: 30px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .challan-wrapper {
+        width: 100%;
+        max-width: 920px;
+    }
+
+    /* ===== TITLE ===== */
+    .challan-title {
+        font-weight: 800;
+        letter-spacing: 0.3px;
+    }
+
+    /* ===== CARD ===== */
+    .challan-card {
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 26px 28px;
+        margin-top: 18px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    /* ===== HEADER ===== */
+    .challan-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #e0e0e0;
+        padding-bottom: 12px;
+    }
+
+    /* ===== GRID ===== */
+    .challan-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 22px 40px;
+        margin-top: 25px;
+    }
+
+        .challan-grid label {
+            font-size: 12px;
+            color: #777;
+        }
+
+        .challan-grid span {
+            display: block;
+            font-weight: 600;
+            color: #222;
+            margin-top: 3px;
+        }
+
+    /* ===== STATUS BADGES ===== */
+    .status-badge {
+        padding: 6px 14px;
+        border-radius: 14px;
+        font-size: 12px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .submitted {
+        background: #f3eaea;
+        color: #8B0000;
+    }
+
+    .unpaid {
+        background: #fdecec;
+        color: #8b2c2c;
+    }
+
+    .paid {
+        background: #eef5f0;
+        color: #2f6f44;
+    }
+
+    /* ===== ACTION BUTTONS ===== */
+    .challan-actions {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-top: 28px;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 9px 18px;
+        border-radius: 7px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+        .btn.primary {
+            background: #8B0000;
+            color: #fff;
+            border: 1px solid #8B0000;
+        }
+
+        .btn.outline {
+            background: #f7f7f7;
+            border: 1px solid #ccc;
+            color: #333;
+        }
+
+        .btn.success {
+            background: #2f6f44;
+            color: #fff;
+        }
+
+    /* ===== NOTE ===== */
+    .challan-note {
+        font-size: 12px;
+        margin-top: 12px;
+        color: #777;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    /* ===== FILE MODAL ===== */
+    .file-modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.55);
+        z-index: 9999;
+    }
+
+    .modal-content {
+        background: #fff;
+        width: 85%;
+        max-width: 900px;
+        height: 80%;
+        margin: 5% auto;
+        border-radius: 10px;
+        position: relative;
+        padding: 12px;
+    }
+
+        .modal-content iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 8px;
+        }
+
+    .close-modal {
+        position: absolute;
+        top: 10px;
+        right: 16px;
+        font-size: 22px;
+        font-weight: bold;
+        cursor: pointer;
+        color: #555;
+    }
+</style>
+
+<section class="challan-section">
+    <div class="challan-wrapper">
+
+        <h4 class="challan-title">Challan Invoice</h4>
+        <hr />
+
+        <div class="challan-card">
+
+            <div class="challan-header">
+                <h5 style="font-weight:700">Fee Challan Details</h5>
+                <span class="status-badge submitted">Application Submitted</span>
+            </div>
+
+            <div class="challan-grid">
+                <div>
+                    <label>Application ID</label>
+                    <span>#APP-0038</span>
+                </div>
+                <div>
+                    <label>Student Name</label>
+                    <span>Amber</span>
+                </div>
+                <div>
+                    <label>Class Applied</label>
+                    <span>Nursery</span>
+                </div>
+                <div>
+                    <label>Fee Amount</label>
+                    <span>Rs. 25,000</span>
+                </div>
+                <div>
+                    <label>Due Date</label>
+                    <span>20-Aug-2025</span>
+                </div>
+                <div>
+                    <label>Fee Status</label>
+                    <span class="status-badge unpaid">Unpaid</span>
+                </div>
+            </div>
+
+            <div class="challan-actions">
+                <a href="#" class="btn primary">⬇ Download Challan (PDF)</a>
+
+                <label class="btn outline" id="uploadBtn">
+                    ⬆ Upload Receipt
+                    <input type="file" id="receiptInput" hidden accept="image/*,.pdf">
+                </label>
+
+                <button class="btn primary hidden" id="viewReceiptBtn">
+                    👁 View Receipt
+                </button>
+            </div>
+
+            <p class="challan-note">
+                * Please submit the fee before due date to avoid cancellation.
+            </p>
+
+        </div>
+    </div>
+</section>
+
+<!-- FILE PREVIEW MODAL -->
+<div class="file-modal" id="fileModal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <iframe id="filePreview"></iframe>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+        const receiptInput = document.getElementById("receiptInput");
+        const viewBtn = document.getElementById("viewReceiptBtn");
+        const uploadBtn = document.getElementById("uploadBtn");
+
+        const modal = document.getElementById("fileModal");
+        const iframe = document.getElementById("filePreview");
+        const closeModal = document.querySelector(".close-modal");
+
+        let uploadedFileURL = null;
+
+        receiptInput.addEventListener("change", function () {
+            const file = this.files[0];
+            if (!file) return;
+
+            const allowedTypes = ["application/pdf", "image/jpeg", "image/png"];
+
+            if (!allowedTypes.includes(file.type)) {
+                alert("Only PDF, JPG, or PNG files are allowed.");
+                receiptInput.value = "";
+                return;
+            }
+
+            uploadedFileURL = URL.createObjectURL(file);
+
+            uploadBtn.innerHTML = "✔ Receipt Uploaded";
+            uploadBtn.style.pointerEvents = "none";
+            uploadBtn.style.opacity = "0.7";
+
+            viewBtn.classList.remove("hidden");
+        });
+
+        viewBtn.addEventListener("click", () => {
+            if (!uploadedFileURL) return;
+            iframe.src = uploadedFileURL;
+            modal.style.display = "block";
+        });
+
+        closeModal.addEventListener("click", () => {
+            modal.style.display = "none";
+            iframe.src = "";
+        });
+
+        modal.addEventListener("click", e => {
+            if (e.target === modal) {
+                modal.style.display = "none";
+                iframe.src = "";
+            }
+        });
+
+    });
+</script>

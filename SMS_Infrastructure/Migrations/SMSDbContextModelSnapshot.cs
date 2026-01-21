@@ -131,10 +131,6 @@ namespace Infrastructure.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("app_approvedon");
 
-                    b.Property<string>("BFormFilePath")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("app_BFORM_file");
-
                     b.Property<string>("BFormNumber")
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("app_BFORM_number");
@@ -171,18 +167,6 @@ namespace Infrastructure.Migrations
                     b.Property<string>("PrevSchool")
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("app_prevschool_name");
-
-                    b.Property<string>("PreviousSchoolCertFilePath")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("app_prevschool_certfile");
-
-                    b.Property<string>("PreviousSchoolLeavCertFilePath")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("app_prevschoolleaving_certfile");
-
-                    b.Property<string>("ProfilePicFilePath")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("app_picturefilename");
 
                     b.Property<long>("SchoolId")
                         .HasColumnType("bigint")
@@ -951,8 +935,9 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("sub_active")
                         .HasColumnType("bit");
 
-                    b.Property<long>("sub_description")
-                        .HasColumnType("bigint");
+                    b.Property<string>("sub_description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("sub_id");
 

@@ -102,7 +102,9 @@ function countDoneSteps() {
 function goToStep(step) {
     if (step < 1 || step > TOTAL_STEPS) return;
     currentStep = step;
-    maxStepReached = Math.max(maxStepReached, step);
+    if (maxStepReached < 6) {
+        maxStepReached = Math.max(maxStepReached, step);
+    }
     // Show application section
     showSection('applicationSection');
 
@@ -130,7 +132,7 @@ function goToStep(step) {
     setProgress('appProgressBar');
     setProgress('progressBar');
 
-    
+
     // Final step status
     const statusWrap = document.getElementById('applicationStatusWrap');
     if (statusWrap) statusWrap.classList.toggle('hidden', step !== TOTAL_STEPS);
@@ -258,7 +260,8 @@ function setProgress(barId) {
 }
 
 /* --------------- Save each step data (no validation) --------------- */
-var guardianCnicFiles=[];
+var guardianCnicFiles = [];
+debugger;
 async function saveStep(step) {
     if (step === 1) {
         const data = {
@@ -333,7 +336,7 @@ async function saveStep(step) {
             }
         } catch (err) {
             console.error(err);
-            alert(err+" server error in Step 2");
+            alert(err + " server error in Step 2");
         }
         return;
     }
@@ -369,7 +372,7 @@ async function saveStep(step) {
             if (result.success) {
                 console.log("✅ Step 3 saved successfully");
                 appState.steps[3].done = true;
-                goToStep(4);
+                 goToStep(4);
             } else {
                 alert("❌ Error saving step 3: " + (result.message || ""));
             }
@@ -430,8 +433,7 @@ async function saveStep(step) {
             alert("Server error in Step 4");
         }
     }
-    if (step === 5)
-    {
+    if (step === 5) {
         let formData = new FormData();
         let srows = document.querySelectorAll("#siblingsTable tbody tr");
         srows.forEach((row, i) => {
@@ -484,7 +486,8 @@ async function saveStep(step) {
             if (result.success) {
                 console.log("✅ Application submitted successfully");
                 alert("✅ Application submitted successfully!");
-                showSection('viewApplicationSection');
+                showSection('paymentsSection');
+                window.location.href = '/Applicants/Dashboard';
             } else {
                 console.warn("❌ Server rejected:", result.message);
                 alert("❌ Error submitting application: " + (result.message || ""));
@@ -587,7 +590,7 @@ async function saveSibling() {
             <button class="btn yellow" onclick="editSibling(this)">Edit</button>
             <button class="btn red" onclick="this.closest('tr').remove()">Delete</button>
           </td>
-        `;             
+        `;
             }
         }
 
@@ -806,7 +809,7 @@ function addGuardianRow() {
         editRow.cells[4].innerText = job;
         editRow.cells[5].innerText = gender;
         editRow.cells[6].innerText = address;
-        editRow.cells[7].innerText = email;                
+        editRow.cells[7].innerText = email;
 
         editRow = null;
         if (saveBtn) saveBtn.innerText = "Save"; // Switch button text back
@@ -828,7 +831,7 @@ function addGuardianRow() {
           <button class="btn yellow" onclick="editGuardianRow(this)">Edit</button>
           <button class="btn red" onclick="this.parentElement.parentElement.remove()">Delete</button>
         </td>
-      `;           
+      `;
         }
     }
 
