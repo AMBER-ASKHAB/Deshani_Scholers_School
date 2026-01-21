@@ -148,6 +148,7 @@ namespace School_Management_System.Controllers
             try
             {
                 var applicant = await _dbcontext.Applicants.FindAsync(model.ApplicantId);
+                var applicant_doc = await _dbcontext.Applicants.FindAsync(model.ApplicantId);
                 if (applicant == null)
                 {
                     return NotFound(new { success = false, message = "Applicant not found" });
